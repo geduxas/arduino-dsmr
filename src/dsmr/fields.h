@@ -228,8 +228,10 @@ namespace dsmr
       static constexpr char Wh[] = "Wh";
       static constexpr char kW[] = "kW";
       static constexpr char W[] = "W";
+      static constexpr char kV[] = "kV";
       static constexpr char V[] = "V";
       static constexpr char mV[] = "mV";
+      static constexpr char kA[] = "kA";
       static constexpr char A[] = "A";
       static constexpr char mA[] = "mA";
       static constexpr char m3[] = "m3";
@@ -238,6 +240,11 @@ namespace dsmr
       static constexpr char MJ[] = "MJ";
       static constexpr char kvar[] = "kvar";
       static constexpr char kvarh[] = "kvarh";
+      static constexpr char kVA[] = "kVA";
+      static constexpr char VA[] = "VA";
+      static constexpr char s[] = "s";
+      static constexpr char Hz[] ="Hz";
+      static constexpr char kHz[] ="kHz";
     };
 
     const uint8_t GAS_MBUS_ID = DSMR_GAS_MBUS_ID;
@@ -276,18 +283,43 @@ namespace dsmr
     DEFINE_FIELD(energy_delivered_tariff1, FixedValue, ObisId(1, 0, 1, 8, 1), FixedField, units::kWh, units::Wh);
     /* Meter Reading electricity delivered to client (Tariff 2) in 0,001 kWh */
     DEFINE_FIELD(energy_delivered_tariff2, FixedValue, ObisId(1, 0, 1, 8, 2), FixedField, units::kWh, units::Wh);
+    /* Meter Reading electricity delivered to client (Tariff 3) in 0,001 kWh */
+    DEFINE_FIELD(energy_delivered_tariff3, FixedValue, ObisId(1, 0, 1, 8, 3), FixedField, units::kWh, units::Wh);
+    /* Meter Reading electricity delivered to client (Tariff 4) in 0,001 kWh */
+    DEFINE_FIELD(energy_delivered_tariff4, FixedValue, ObisId(1, 0, 1, 8, 4), FixedField, units::kWh, units::Wh);
     /* Meter Reading electricity delivered by client (Special for Lux) in 0,001 kWh */
     DEFINE_FIELD(energy_returned_lux, FixedValue, ObisId(1, 0, 2, 8, 0), FixedField, units::kWh, units::Wh);
     /* Meter Reading electricity delivered by client (Tariff 1) in 0,001 kWh */
     DEFINE_FIELD(energy_returned_tariff1, FixedValue, ObisId(1, 0, 2, 8, 1), FixedField, units::kWh, units::Wh);
     /* Meter Reading electricity delivered by client (Tariff 2) in 0,001 kWh */
     DEFINE_FIELD(energy_returned_tariff2, FixedValue, ObisId(1, 0, 2, 8, 2), FixedField, units::kWh, units::Wh);
-
+    /* Meter Reading electricity delivered by client (Tariff 3) in 0,001 kWh */
+    DEFINE_FIELD(energy_returned_tariff3, FixedValue, ObisId(1, 0, 2, 8, 3), FixedField, units::kWh, units::Wh);
+    /* Meter Reading electricity delivered by client (Tariff 4) in 0,001 kWh */
+    DEFINE_FIELD(energy_returned_tariff4, FixedValue, ObisId(1, 0, 2, 8, 4), FixedField, units::kWh, units::Wh);
     /*
- * Extra fields used for Luxembourg
+ * Extra fields used for Luxembourg (Total reactive import/export)
  */
     DEFINE_FIELD(total_imported_energy, FixedValue, ObisId(1, 0, 3, 8, 0), FixedField, units::kvarh, units::kvarh);
+    /* Meter Reading Reactive energy delivered to client (Tariff 1) in 0,001 kvarh */
+    DEFINE_FIELD(reactive_energy_delivered_tariff1, FixedValue, ObisId(1, 0, 3, 8, 1), FixedField, units::kvarh, units::kvarh);
+    /* Meter Reading Reactive energy delivered to client (Tariff 2) in 0,001 kvarh */
+    DEFINE_FIELD(reactive_energy_delivered_tariff2, FixedValue, ObisId(1, 0, 3, 8, 2), FixedField, units::kvarh, units::kvarh);
+    /* Meter Reading Reactive energy delivered to client (Tariff 3) in 0,001 kvarh */
+    DEFINE_FIELD(reactive_energy_delivered_tariff3, FixedValue, ObisId(1, 0, 3, 8, 3), FixedField, units::kvarh, units::kvarh);
+    /* Meter Reading Reactive energy delivered to client (Tariff 4) in 0,001 kvarh */
+    DEFINE_FIELD(reactive_energy_delivered_tariff4, FixedValue, ObisId(1, 0, 3, 8, 4), FixedField, units::kvarh, units::kvarh);
+    
     DEFINE_FIELD(total_exported_energy, FixedValue, ObisId(1, 0, 4, 8, 0), FixedField, units::kvarh, units::kvarh);
+
+    /* Meter Reading Reactive energy delivered by client (Tariff 1) in 0,001 kvarh */
+    DEFINE_FIELD(reactive_energy_returned_tariff1, FixedValue, ObisId(1, 0, 4, 8, 1), FixedField, units::kvarh, units::kvarh);
+    /* Meter Reading Reactive energy delivered by client (Tariff 2) in 0,001 kvarh */
+    DEFINE_FIELD(reactive_energy_returned_tariff2, FixedValue, ObisId(1, 0, 4, 8, 2), FixedField, units::kvarh, units::kvarh);
+    /* Meter Reading Reactive energy delivered by client (Tariff 3) in 0,001 kvarh */
+    DEFINE_FIELD(reactive_energy_returned_tariff3, FixedValue, ObisId(1, 0, 4, 8, 3), FixedField, units::kvarh, units::kvarh);
+    /* Meter Reading Reactive energy delivered by client (Tariff 4) in 0,001 kvarh */
+    DEFINE_FIELD(reactive_energy_returned_tariff4, FixedValue, ObisId(1, 0, 4, 8, 4), FixedField, units::kvarh, units::kvarh);
 
     /* Tariff indicator electricity. The tariff indicator can also be used
  * to switch tariff dependent loads e.g boilers. This is the
@@ -326,12 +358,40 @@ namespace dsmr
     /* Number of voltage sags in phase L3 (polyphase meters only) */
     DEFINE_FIELD(electricity_sags_l3, uint32_t, ObisId(1, 0, 72, 32, 0), IntField, units::none);
 
+    /* Last voltage sag duration in phase L1 */
+    DEFINE_FIELD(voltage_sag_time_l1, uint32_t, ObisId(1, 0, 32, 33, 0), IntField, units::s);
+    /* Last voltage sag duration in phase L2 */
+    DEFINE_FIELD(voltage_sag_time_l2, uint32_t, ObisId(1, 0, 52, 33, 0), IntField, units::s);
+    /* Last voltage sag duration in phase L3 */
+    DEFINE_FIELD(voltage_sag_time_l3, uint32_t, ObisId(1, 0, 72, 33, 0), IntField, units::s);
+
+    /* Last voltage sag in phase L1 */
+    DEFINE_FIELD(voltage_sag_l1, uint32_t, ObisId(1, 0, 32, 34, 0), IntField, units::V);
+    /* Last voltage sag in phase L2 */
+    DEFINE_FIELD(voltage_sag_l2, uint32_t, ObisId(1, 0, 52, 34, 0), IntField, units::V);
+    /* Last voltage sag in phase L3 */
+    DEFINE_FIELD(voltage_sag_l3, uint32_t, ObisId(1, 0, 72, 34, 0), IntField, units::V);
+
     /* Number of voltage swells in phase L1 */
     DEFINE_FIELD(electricity_swells_l1, uint32_t, ObisId(1, 0, 32, 36, 0), IntField, units::none);
     /* Number of voltage swells in phase L2 (polyphase meters only) */
     DEFINE_FIELD(electricity_swells_l2, uint32_t, ObisId(1, 0, 52, 36, 0), IntField, units::none);
     /* Number of voltage swells in phase L3 (polyphase meters only) */
     DEFINE_FIELD(electricity_swells_l3, uint32_t, ObisId(1, 0, 72, 36, 0), IntField, units::none);
+
+    /* Last voltage swell duration in phase L1 */
+    DEFINE_FIELD(voltage_swell_time_l1, uint32_t, ObisId(1, 0, 32, 37, 0), IntField, units::s);
+    /* Last voltage swell duration in phase L2 */
+    DEFINE_FIELD(voltage_swell_time_l2, uint32_t, ObisId(1, 0, 52, 37, 0), IntField, units::s);
+    /* Last voltage swell duration in phase L3 */
+    DEFINE_FIELD(voltage_swell_time_l3, uint32_t, ObisId(1, 0, 72, 37, 0), IntField, units::s);
+    
+    /* Last voltage swell in phase L1 */
+    DEFINE_FIELD(voltage_swell_l1, uint32_t, ObisId(1, 0, 32, 38, 0), IntField, units::V);
+    /* Last voltage swell in phase L2 */
+    DEFINE_FIELD(voltage_swell_l2, uint32_t, ObisId(1, 0, 52, 38, 0), IntField, units::V);
+    /* Last voltage swell in phase L3 */
+    DEFINE_FIELD(voltage_swell_l3, uint32_t, ObisId(1, 0, 72, 38, 0), IntField, units::V);
 
     /* Text message codes: numeric 8 digits (Note: Missing from 5.0 spec)
  * */
@@ -343,22 +403,39 @@ namespace dsmr
     /* Instantaneous voltage L1 in 0.1V resolution (Note: Spec says V
  * resolution in comment, but 0.1V resolution in format spec. Added in
  * 5.0) */
-    DEFINE_FIELD(voltage_l1, FixedValue, ObisId(1, 0, 32, 7, 0), FixedField, units::V, units::mV);
+    /* Temporary ESO Fix for kV and kA*/
+    DEFINE_FIELD(voltage_l1, FixedValue, ObisId(1, 0, 32, 7, 0), FixedField, units::kV, units::V);
+    DEFINE_FIELD(voltage_avg_l1, FixedValue, ObisId(1, 0, 32, 24, 0), FixedField, units::kV, units::V);
     /* Instantaneous voltage L2 in 0.1V resolution (Note: Spec says V
  * resolution in comment, but 0.1V resolution in format spec. Added in
  * 5.0) */
-    DEFINE_FIELD(voltage_l2, FixedValue, ObisId(1, 0, 52, 7, 0), FixedField, units::V, units::mV);
+    DEFINE_FIELD(voltage_l2, FixedValue, ObisId(1, 0, 52, 7, 0), FixedField, units::kV, units::V);
+    DEFINE_FIELD(voltage_avg_l2, FixedValue, ObisId(1, 0, 52, 24, 0), FixedField, units::kV, units::V);
     /* Instantaneous voltage L3 in 0.1V resolution (Note: Spec says V
  * resolution in comment, but 0.1V resolution in format spec. Added in
  * 5.0) */
-    DEFINE_FIELD(voltage_l3, FixedValue, ObisId(1, 0, 72, 7, 0), FixedField, units::V, units::mV);
+    DEFINE_FIELD(voltage_l3, FixedValue, ObisId(1, 0, 72, 7, 0), FixedField, units::kV, units::V);
+    DEFINE_FIELD(voltage_avg_l3, FixedValue, ObisId(1, 0, 72, 24, 0), FixedField, units::kV, units::V);
+    
+    DEFINE_FIELD(voltage, FixedValue, ObisId(1, 0, 12, 7, 0), FixedField, units::kV, units::V);
+    DEFINE_FIELD(frequency, FixedValue, ObisId(1, 0, 14, 7, 0), FixedField, units::kHz, units::Hz);
+    DEFINE_FIELD(abs_power, FixedValue, ObisId(1, 0, 15, 7, 0), FixedField, units::kW, units::W);
+    
 
     /* Instantaneous current L1 in A resolution */
-    DEFINE_FIELD(current_l1, FixedValue, ObisId(1, 0, 31, 7, 0), FixedField, units::A, units::mA);
+    DEFINE_FIELD(current_l1, FixedValue, ObisId(1, 0, 31, 7, 0), FixedField, units::kA, units::A);
+    DEFINE_FIELD(current_fuse_l1, FixedValue, ObisId(1, 0, 31, 4, 0), FixedField, units::kA, units::A);
     /* Instantaneous current L2 in A resolution */
-    DEFINE_FIELD(current_l2, FixedValue, ObisId(1, 0, 51, 7, 0), FixedField, units::A, units::mA);
+    DEFINE_FIELD(current_l2, FixedValue, ObisId(1, 0, 51, 7, 0), FixedField, units::kA, units::A);
+    DEFINE_FIELD(current_fuse_l2, FixedValue, ObisId(1, 0, 51, 4, 0), FixedField, units::kA, units::A);
     /* Instantaneous current L3 in A resolution */
-    DEFINE_FIELD(current_l3, FixedValue, ObisId(1, 0, 71, 7, 0), FixedField, units::A, units::mA);
+    DEFINE_FIELD(current_l3, FixedValue, ObisId(1, 0, 71, 7, 0), FixedField, units::kA, units::A);
+    DEFINE_FIELD(current_fuse_l3, FixedValue, ObisId(1, 0, 71, 4, 0), FixedField, units::kA, units::A);
+
+    DEFINE_FIELD(current, FixedValue, ObisId(1, 0, 11, 7, 0), FixedField, units::kA, units::A);
+    DEFINE_FIELD(current_n, FixedValue, ObisId(1, 0, 91, 7, 0), FixedField, units::kA, units::A);
+    DEFINE_FIELD(current_sum, FixedValue, ObisId(1, 0, 90, 7, 0), FixedField, units::kA, units::A);
+
 
     /* Instantaneous active power L1 (+P) in W resolution */
     DEFINE_FIELD(power_delivered_l1, FixedValue, ObisId(1, 0, 21, 7, 0), FixedField, units::kW, units::W);
@@ -374,25 +451,52 @@ namespace dsmr
     /* Instantaneous active power L3 (-P) in W resolution */
     DEFINE_FIELD(power_returned_l3, FixedValue, ObisId(1, 0, 62, 7, 0), FixedField, units::kW, units::W);
 
+    /* Apparent instantaneous power (+S) in kVA resolution */
+    DEFINE_FIELD(apparent_delivery_power, FixedValue, ObisId(1, 0, 9, 7, 0), FixedField, units::kVA, units::VA);
+    /* Apparent instantaneous power L1 (+S) in kVA resolution */
+    DEFINE_FIELD(apparent_delivery_power_l1, FixedValue, ObisId(1, 0, 29, 7, 0), FixedField, units::kVA, units::VA);
+    /* Apparent instantaneous power L2 (+S) in kVA resolution */
+    DEFINE_FIELD(apparent_delivery_power_l2, FixedValue, ObisId(1, 0, 49, 7, 0), FixedField, units::kVA, units::VA);
+    /* Apparent instantaneous power L3 (+S) in kVA resolution */
+    DEFINE_FIELD(apparent_delivery_power_l3, FixedValue, ObisId(1, 0, 69, 7, 0), FixedField, units::kVA, units::VA);
+
+    /* Apparent instantaneous power (-S) in kVA resolution */
+    DEFINE_FIELD(apparent_return_power, FixedValue, ObisId(1, 0, 10, 7, 0), FixedField, units::kVA, units::VA);
+    /* Apparent instantaneous power L1 (-S) in kVA resolution */
+    DEFINE_FIELD(apparent_return_power_l1, FixedValue, ObisId(1, 0, 30, 7, 0), FixedField, units::kVA, units::VA);
+    /* Apparent instantaneous power L2 (-S) in kVA resolution */
+    DEFINE_FIELD(apparent_return_power_l2, FixedValue, ObisId(1, 0, 50, 7, 0), FixedField, units::kVA, units::VA);
+    /* Apparent instantaneous power L3 (-S) in kVA resolution */
+    DEFINE_FIELD(apparent_return_power_l3, FixedValue, ObisId(1, 0, 70, 7, 0), FixedField, units::kVA, units::VA);
+
+    /* Active Demand Avg3 Plus in W resolution */
+    DEFINE_FIELD(active_demand_power, FixedValue, ObisId(1, 0, 1, 24, 0), FixedField, units::kW, units::W);
+    /* Active Demand Avg3 Net in W resolution */
+    /* Integer value maygt be negative*/
+    DEFINE_FIELD(active_demand_net, int32_t, ObisId(1, 0, 16, 24, 0), IntField, units::kW);
+    /* Active Demand Avg3 Absolute  in W resolution */
+    DEFINE_FIELD(active_demand_abs, FixedValue, ObisId(1, 0, 15, 24, 0), FixedField, units::kW, units::W);
+
+
     /*
  * LUX
  */
     /* Instantaneous reactive power L1 (+Q) in W resolution */
-    DEFINE_FIELD(reactive_power_delivered_l1, FixedValue, ObisId(1, 0, 23, 7, 0), FixedField, units::none, units::none);
+    DEFINE_FIELD(reactive_power_delivered_l1, FixedValue, ObisId(1, 0, 23, 7, 0), FixedField, units::kvar, units::kvar);
     /* Instantaneous reactive power L2 (+Q) in W resolution */
-    DEFINE_FIELD(reactive_power_delivered_l2, FixedValue, ObisId(1, 0, 43, 7, 0), FixedField, units::none, units::none);
+    DEFINE_FIELD(reactive_power_delivered_l2, FixedValue, ObisId(1, 0, 43, 7, 0), FixedField, units::kvar, units::kvar);
     /* Instantaneous reactive power L3 (+Q) in W resolution */
-    DEFINE_FIELD(reactive_power_delivered_l3, FixedValue, ObisId(1, 0, 63, 7, 0), FixedField, units::none, units::none);
+    DEFINE_FIELD(reactive_power_delivered_l3, FixedValue, ObisId(1, 0, 63, 7, 0), FixedField, units::kvar, units::kvar);
 
     /*
  * LUX
  */
     /* Instantaneous reactive power L1 (-Q) in W resolution */
-    DEFINE_FIELD(reactive_power_returned_l1, FixedValue, ObisId(1, 0, 24, 7, 0), FixedField, units::none, units::none);
+    DEFINE_FIELD(reactive_power_returned_l1, FixedValue, ObisId(1, 0, 24, 7, 0), FixedField, units::kvar, units::kvar);
     /* Instantaneous reactive power L2 (-Q) in W resolution */
-    DEFINE_FIELD(reactive_power_returned_l2, FixedValue, ObisId(1, 0, 44, 7, 0), FixedField, units::none, units::none);
+    DEFINE_FIELD(reactive_power_returned_l2, FixedValue, ObisId(1, 0, 44, 7, 0), FixedField, units::kvar, units::kvar);
     /* Instantaneous reactive power L3 (-Q) in W resolution */
-    DEFINE_FIELD(reactive_power_returned_l3, FixedValue, ObisId(1, 0, 64, 7, 0), FixedField, units::none, units::none);
+    DEFINE_FIELD(reactive_power_returned_l3, FixedValue, ObisId(1, 0, 64, 7, 0), FixedField, units::kvar, units::kvar);
 
     /* Device-Type */
     DEFINE_FIELD(gas_device_type, uint16_t, ObisId(0, GAS_MBUS_ID, 24, 1, 0), IntField, units::none);
@@ -460,11 +564,19 @@ namespace dsmr
     /* Extra fields used for Belgian capacity rate/peak consumption (cappaciteitstarief) */
     /*Current quart-hourly energy consumption*/
     DEFINE_FIELD(active_energy_import_current_average_demand, FixedValue, ObisId(1, 0, 1, 4, 0), FixedField, units::kW, units::W);
+    
+    DEFINE_FIELD(active_energy_export_current_average_demand, FixedValue, ObisId(1, 0, 2, 4, 0), FixedField, units::kW, units::W);
     /*Maximum energy consumption from the current month*/
     DEFINE_FIELD(active_energy_import_maximum_demand_running_month, TimestampedFixedValue, ObisId(1, 0, 1, 6, 0), TimestampedFixedField, units::kW, units::W);
     /*Maximum energy consumption from the last 13 months*/
     DEFINE_FIELD(active_energy_import_maximum_demand_last_13_months, FixedValue, ObisId(0, 0, 98, 1, 0), LastFixedField, units::kW, units::W);
 
+    /* Image Core Version and checksum*/
+    DEFINE_FIELD(fw_core_version, FixedValue, ObisId(1, 0, 0, 2, 0), FixedField, units::none, units::none);
+    DEFINE_FIELD(fw_core_checksum, String, ObisId(1, 0, 0, 2, 8), StringField, 0, 8);
+    /* Image Module Version and checksum*/
+    DEFINE_FIELD(fw_module_version, FixedValue, ObisId(1, 1, 0, 2, 0), FixedField, units::none, units::none);
+    DEFINE_FIELD(fw_module_checksum, String, ObisId(1, 1, 0, 2, 8), StringField, 0, 8);
   } // namespace fields
 
 } // namespace dsmr
