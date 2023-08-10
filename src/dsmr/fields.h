@@ -561,11 +561,21 @@ namespace dsmr
     DEFINE_FIELD(sub_delivered, TimestampedFixedValue, ObisId(0, SUB_MBUS_ID, 24, 2, 1), TimestampedFixedField,
                  units::m3, units::dm3);
 
-    /* Extra fields used for Belgian capacity rate/peak consumption (cappaciteitstarief) */
+    /* Extra fields used for Belgian and Lthuania capacity rate/peak consumption (cappaciteitstarief) */
     /*Current quart-hourly energy consumption*/
-    DEFINE_FIELD(active_energy_import_current_average_demand, FixedValue, ObisId(1, 0, 1, 4, 0), FixedField, units::kW, units::W);
-    
+    DEFINE_FIELD(active_energy_import_current_average_demand, FixedValue, ObisId(1, 0, 1, 4, 0), FixedField, units::kW, units::W);   
     DEFINE_FIELD(active_energy_export_current_average_demand, FixedValue, ObisId(1, 0, 2, 4, 0), FixedField, units::kW, units::W);
+    DEFINE_FIELD(reactive_energy_import_current_average_demand, FixedValue, ObisId(1, 0, 3, 4, 0), FixedField, units::kvar, units::kvar);
+    DEFINE_FIELD(reactive_energy_export_current_average_demand, FixedValue, ObisId(1, 0, 4, 4, 0), FixedField, units::kvar, units::kvar);
+    DEFINE_FIELD(apparent_energy_import_current_average_demand, FixedValue, ObisId(1, 0, 9, 4, 0), FixedField, units::kVA, units::VA);
+    DEFINE_FIELD(apparent_energy_export_current_average_demand, FixedValue, ObisId(1, 0, 10, 4, 0), FixedField, units::kVA, units::VA);
+    DEFINE_FIELD(active_energy_import_last_completed_demand, FixedValue, ObisId(1, 0, 1, 5, 0), FixedField, units::kW, units::W);
+    DEFINE_FIELD(active_energy_export_last_completed_demand, FixedValue, ObisId(1, 0, 2, 5, 0), FixedField, units::kW, units::W);
+    DEFINE_FIELD(reactive_energy_import_last_completed_demand, FixedValue, ObisId(1, 0, 3, 5, 0), FixedField, units::kvar, units::kvar);
+    DEFINE_FIELD(reactive_energy_export_last_completed_demand, FixedValue, ObisId(1, 0, 4, 5, 0), FixedField, units::kvar, units::kvar);
+    DEFINE_FIELD(apparent_energy_import_last_completed_demand, FixedValue, ObisId(1, 0, 9, 5, 0), FixedField, units::kVA, units::VA);
+    DEFINE_FIELD(apparent_energy_export_last_completed_demand, FixedValue, ObisId(1, 0, 10, 5, 0), FixedField, units::kVA, units::VA);
+
     /*Maximum energy consumption from the current month*/
     DEFINE_FIELD(active_energy_import_maximum_demand_running_month, TimestampedFixedValue, ObisId(1, 0, 1, 6, 0), TimestampedFixedField, units::kW, units::W);
     /*Maximum energy consumption from the last 13 months*/
