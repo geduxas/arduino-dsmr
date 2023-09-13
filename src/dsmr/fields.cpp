@@ -280,6 +280,9 @@ constexpr char current_n::name[];
 constexpr ObisId current_sum::id;
 constexpr char current_sum::name[];
 
+constexpr ObisId abs_power::id;
+constexpr char abs_power::name[];
+
 constexpr ObisId power_delivered_l1::id;
 constexpr char power_delivered_l1::name[];
 
