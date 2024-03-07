@@ -435,6 +435,9 @@ constexpr char reactive_energy_import_last_completed_demand::name[];
 constexpr ObisId reactive_energy_export_last_completed_demand::id;
 constexpr char reactive_energy_export_last_completed_demand::name[];
 
+constexpr ObisId reactive_energy_export_current_average_demand::id;
+constexpr char reactive_energy_export_current_average_demand::name[];
+
 constexpr ObisId apparent_energy_import_last_completed_demand::id;
 constexpr char apparent_energy_import_last_completed_demand::name[];
 
