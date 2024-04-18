@@ -475,7 +475,7 @@ namespace dsmr
     DEFINE_FIELD(active_demand_power, FixedValue, ObisId(1, 0, 1, 24, 0), FixedField, units::kW, units::W);
     /* Active Demand Avg3 Net in W resolution */
     /* Integer value maygt be negative*/
-    DEFINE_FIELD(active_demand_net, int32_t, ObisId(1, 0, 16, 24, 0), IntField, units::kW);
+    DEFINE_FIELD(active_demand_net, FixedField, ObisId(1, 0, 16, 24, 0), FixedField, units::kW, units::W);
     /* Active Demand Avg3 Absolute  in W resolution */
     DEFINE_FIELD(active_demand_abs, FixedValue, ObisId(1, 0, 15, 24, 0), FixedField, units::kW, units::W);
 
@@ -584,7 +584,7 @@ namespace dsmr
     DEFINE_FIELD(active_energy_import_maximum_demand_last_13_months, FixedValue, ObisId(0, 0, 98, 1, 0), LastFixedField, units::kW, units::W);
 
     /* Power Factor*/
-    DEFINE_FIELD(power_factor, int16_t, ObisId(1, 0, 13, 7, 0),IntField, units::none);
+    DEFINE_FIELD(power_factor, int16_t, ObisId(1, 0, 13, 7, 0),IntField, units::sec);
     DEFINE_FIELD(power_factor_l1, int16_t, ObisId(1, 0, 33, 7, 0),IntField, units::none);
     DEFINE_FIELD(power_factor_l2, int16_t, ObisId(1, 0, 53, 7, 0),IntField, units::none);
     DEFINE_FIELD(power_factor_l3, int16_t, ObisId(1, 0, 73, 7, 0),IntField, units::none);
