@@ -174,16 +174,23 @@ namespace dsmr
 
   struct NumParser
   {
-    static ParseResult<uint32_t> parse(size_t max_decimals, const char *unit, const char *str, const char *end)
+    static ParseResult<int32_t> parse(size_t max_decimals, const char *unit, const char *str, const char *end)
     {
-      ParseResult<uint32_t> res;
+      ParseResult<int32_t> res;
       if (str >= end || *str != '(')
         return res.fail("Missing (", str);
 
       const char *num_start = str + 1; // Skip (
       const char *num_end = num_start;
 
-      uint32_t value = 0;
+      int32_t value = 0;
+      bool negative = false;
+
+      if (*num_end == "-") {
+        negative=true;
+        ++num_end;
+      }
+
 
       // Parse integer part
       while (num_end < end && !strchr("*.)", *num_end))
@@ -230,7 +237,8 @@ namespace dsmr
 
       if (num_end >= end || *num_end != ')')
         return res.fail("Extra data", num_end);
-
+      if (negative)
+        value = -value;
       return res.succeed(value).until(num_end + 1); // Skip )
     }
   };
