@@ -584,11 +584,11 @@ namespace dsmr
     DEFINE_FIELD(active_energy_import_maximum_demand_last_13_months, FixedValue, ObisId(0, 0, 98, 1, 0), LastFixedField, units::kW, units::W);
 
     /* Power Factor*/
-    DEFINE_FIELD(power_factor, int16_t, ObisID(1, 0, 13, 7, 0),IntField, units::none);
-    DEFINE_FIELD(power_factor_l1, int16_t, ObisID(1, 0, 33, 7, 0),IntField, units::none);
-    DEFINE_FIELD(power_factor_l2, int16_t, ObisID(1, 0, 53, 7, 0),IntField, units::none);
-    DEFINE_FIELD(power_factor_l3, int16_t, ObisID(1, 0, 73, 7, 0),IntField, units::none);
-    DEFINE_FIELD(min_power_factor, int16_t, ObisID(1, 0, 13, 3, 0),IntField, units::none);
+    DEFINE_FIELD(power_factor, int16_t, ObisId(1, 0, 13, 7, 0),IntField, units::none);
+    DEFINE_FIELD(power_factor_l1, int16_t, ObisId(1, 0, 33, 7, 0),IntField, units::none);
+    DEFINE_FIELD(power_factor_l2, int16_t, ObisId(1, 0, 53, 7, 0),IntField, units::none);
+    DEFINE_FIELD(power_factor_l3, int16_t, ObisId(1, 0, 73, 7, 0),IntField, units::none);
+    DEFINE_FIELD(min_power_factor, int16_t, ObisId(1, 0, 13, 3, 0),IntField, units::none);
 
     /* Image Core Version and checksum*/
     DEFINE_FIELD(fw_core_version, FixedValue, ObisId(1, 0, 0, 2, 0), FixedField, units::none, units::none);
