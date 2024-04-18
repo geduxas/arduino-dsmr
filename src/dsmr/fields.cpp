@@ -455,6 +455,21 @@ constexpr char active_energy_import_maximum_demand_running_month::name[];
 constexpr ObisId active_energy_import_maximum_demand_last_13_months::id;
 constexpr char active_energy_import_maximum_demand_last_13_months::name[];
 
+constexpr ObisId power_factor::id;
+constexpr char power_factor::name[];
+
+constexpr ObisId power_factor_l1::id;
+constexpr char power_factor_l1::name[];
+
+constexpr ObisId power_factor_l2::id;
+constexpr char power_factor_l2::name[];
+
+constexpr ObisId power_factor_l3::id;
+constexpr char power_factor_l3::name[];
+
+constexpr ObisId min_power_factor::id;
+constexpr char min_power_factor::name[];
+
 constexpr ObisId fw_core_version::id;
 constexpr char fw_core_version::name[];
 
