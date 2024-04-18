@@ -189,7 +189,7 @@ namespace dsmr
   {
     ParseResult<void> parse(const char *str, const char *end)
     {
-      ParseResult<uint32_t> res = NumParser::parse(0, _unit, str, end);
+      ParseResult<int32_t> res = NumParser::parse(0, _unit, str, end);
       if (!res.err)
         static_cast<T *>(this)->val() = res.result;
       return res;
