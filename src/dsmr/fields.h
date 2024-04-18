@@ -475,7 +475,7 @@ namespace dsmr
     DEFINE_FIELD(active_demand_power, FixedValue, ObisId(1, 0, 1, 24, 0), FixedField, units::kW, units::W);
     /* Active Demand Avg3 Net in W resolution */
     /* Integer value maygt be negative*/
-    DEFINE_FIELD(active_demand_net, FixedField, ObisId(1, 0, 16, 24, 0), FixedField, units::kW, units::W);
+    DEFINE_FIELD(active_demand_net, FixedValue, ObisId(1, 0, 16, 24, 0), FixedField, units::kW, units::W);
     /* Active Demand Avg3 Absolute  in W resolution */
     DEFINE_FIELD(active_demand_abs, FixedValue, ObisId(1, 0, 15, 24, 0), FixedField, units::kW, units::W);
 
