@@ -186,7 +186,7 @@ namespace dsmr
       int32_t value = 0;
       bool negative = false;
 
-      if (*num_end == "-") {
+      if (*num_end == '-') {
         negative=true;
         ++num_end;
       }
