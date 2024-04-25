@@ -93,9 +93,9 @@ namespace dsmr
   {
     operator float() { return val(); }
     float val() { return _value / 1000.0; }
-    uint32_t int_val() { return _value; }
+    int32_t int_val() { return _value; }
 
-    uint32_t _value;
+    int32_t _value;
   };
 
   // Floating point numbers in the message never have more than 3 decimal
