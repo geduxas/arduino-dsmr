@@ -228,10 +228,8 @@ namespace dsmr
       static constexpr char Wh[] = "Wh";
       static constexpr char kW[] = "kW";
       static constexpr char W[] = "W";
-      static constexpr char kV[] = "kV";
       static constexpr char V[] = "V";
       static constexpr char mV[] = "mV";
-      static constexpr char kA[] = "kA";
       static constexpr char A[] = "A";
       static constexpr char mA[] = "mA";
       static constexpr char m3[] = "m3";
@@ -406,37 +404,37 @@ namespace dsmr
  * resolution in comment, but 0.1V resolution in format spec. Added in
  * 5.0) */
     /* Temporary ESO Fix for kV and kA*/
-    DEFINE_FIELD(voltage_l1, FixedValue, ObisId(1, 0, 32, 7, 0), FixedField, units::kV, units::V);
-    DEFINE_FIELD(voltage_avg_l1, FixedValue, ObisId(1, 0, 32, 24, 0), FixedField, units::kV, units::V);
+    DEFINE_FIELD(voltage_l1, FixedValue, ObisId(1, 0, 32, 7, 0), FixedField, units::V, units::mV);
+    DEFINE_FIELD(voltage_avg_l1, FixedValue, ObisId(1, 0, 32, 24, 0), FixedField, units::V, units::mV);
     /* Instantaneous voltage L2 in 0.1V resolution (Note: Spec says V
  * resolution in comment, but 0.1V resolution in format spec. Added in
  * 5.0) */
-    DEFINE_FIELD(voltage_l2, FixedValue, ObisId(1, 0, 52, 7, 0), FixedField, units::kV, units::V);
-    DEFINE_FIELD(voltage_avg_l2, FixedValue, ObisId(1, 0, 52, 24, 0), FixedField, units::kV, units::V);
+    DEFINE_FIELD(voltage_l2, FixedValue, ObisId(1, 0, 52, 7, 0), FixedField, units::V, units::mV);
+    DEFINE_FIELD(voltage_avg_l2, FixedValue, ObisId(1, 0, 52, 24, 0), FixedField, units::V, units::mV);
     /* Instantaneous voltage L3 in 0.1V resolution (Note: Spec says V
  * resolution in comment, but 0.1V resolution in format spec. Added in
  * 5.0) */
-    DEFINE_FIELD(voltage_l3, FixedValue, ObisId(1, 0, 72, 7, 0), FixedField, units::kV, units::V);
-    DEFINE_FIELD(voltage_avg_l3, FixedValue, ObisId(1, 0, 72, 24, 0), FixedField, units::kV, units::V);
-    
-    DEFINE_FIELD(voltage, FixedValue, ObisId(1, 0, 12, 7, 0), FixedField, units::kV, units::V);
+    DEFINE_FIELD(voltage_l3, FixedValue, ObisId(1, 0, 72, 7, 0), FixedField, units::V, units::mV);
+    DEFINE_FIELD(voltage_avg_l3, FixedValue, ObisId(1, 0, 72, 24, 0), FixedField, units::V, units::mV);
+  
+    DEFINE_FIELD(voltage, FixedValue, ObisId(1, 0, 12, 7, 0), FixedField, units::V, units::mV);
     DEFINE_FIELD(frequency, FixedValue, ObisId(1, 0, 14, 7, 0), FixedField, units::kHz, units::Hz);
     DEFINE_FIELD(abs_power, FixedValue, ObisId(1, 0, 15, 7, 0), FixedField, units::kW, units::W);
     
 
     /* Instantaneous current L1 in A resolution */
-    DEFINE_FIELD(current_l1, FixedValue, ObisId(1, 0, 31, 7, 0), FixedField, units::kA, units::A);
-    DEFINE_FIELD(current_fuse_l1, FixedValue, ObisId(1, 0, 31, 4, 0), FixedField, units::kA, units::A);
+    DEFINE_FIELD(current_l1, FixedValue, ObisId(1, 0, 31, 7, 0), FixedField, units::A, units::mA);
+    DEFINE_FIELD(current_fuse_l1, FixedValue, ObisId(1, 0, 31, 4, 0), FixedField, units::A, units::mA);
     /* Instantaneous current L2 in A resolution */
-    DEFINE_FIELD(current_l2, FixedValue, ObisId(1, 0, 51, 7, 0), FixedField, units::kA, units::A);
-    DEFINE_FIELD(current_fuse_l2, FixedValue, ObisId(1, 0, 51, 4, 0), FixedField, units::kA, units::A);
+    DEFINE_FIELD(current_l2, FixedValue, ObisId(1, 0, 51, 7, 0), FixedField, units:: A, units::mA);
+    DEFINE_FIELD(current_fuse_l2, FixedValue, ObisId(1, 0, 51, 4, 0), FixedField, units::A, units::mA);
     /* Instantaneous current L3 in A resolution */
-    DEFINE_FIELD(current_l3, FixedValue, ObisId(1, 0, 71, 7, 0), FixedField, units::kA, units::A);
-    DEFINE_FIELD(current_fuse_l3, FixedValue, ObisId(1, 0, 71, 4, 0), FixedField, units::kA, units::A);
+    DEFINE_FIELD(current_l3, FixedValue, ObisId(1, 0, 71, 7, 0), FixedField, units::A, units::mA);
+    DEFINE_FIELD(current_fuse_l3, FixedValue, ObisId(1, 0, 71, 4, 0), FixedField, units::A, units::mA);
 
-    DEFINE_FIELD(current, FixedValue, ObisId(1, 0, 11, 7, 0), FixedField, units::kA, units::A);
-    DEFINE_FIELD(current_n, FixedValue, ObisId(1, 0, 91, 7, 0), FixedField, units::kA, units::A);
-    DEFINE_FIELD(current_sum, FixedValue, ObisId(1, 0, 90, 7, 0), FixedField, units::kA, units::A);
+    DEFINE_FIELD(current, FixedValue, ObisId(1, 0, 11, 7, 0), FixedField, units::A, units::mA);
+    DEFINE_FIELD(current_n, FixedValue, ObisId(1, 0, 91, 7, 0), FixedField, units::A, units::mA);
+    DEFINE_FIELD(current_sum, FixedValue, ObisId(1, 0, 90, 7, 0), FixedField, units::A, units::mA);
 
 
     /* Instantaneous active power L1 (+P) in W resolution */
