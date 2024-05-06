@@ -41,7 +41,7 @@ constexpr char units::none[];
 constexpr char units::kWh[];
 constexpr char units::Wh[];
 constexpr char units::kW[];
-constexpr char units::W[]
+constexpr char units::W[];
 constexpr char units::V[];
 constexpr char units::mV[];
 constexpr char units::A[];
