@@ -479,3 +479,9 @@ constexpr char fw_module_version::name[];
 
 constexpr ObisId fw_module_checksum::id;
 constexpr char fw_module_checksum::name[];
+
+constexpr ObisId equipment_id::id;
+constexpr char equipment_id::name[];
+
+constexpr ObisId consumer_msg::id;
+constexpr char consumer_msg::name[];

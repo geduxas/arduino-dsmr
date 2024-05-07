@@ -73,6 +73,41 @@ namespace dsmr
     }
   };
 
+  // A hexstring field is essencially a string filled with hex digits. If the
+  // string does not consist of an even number of hex digits, the original
+  // string is returned, otherwise the decoded hex string is returned.
+  template <typename T, size_t minlen, size_t maxlen>
+  struct HexStringField : ParsedField<T>
+  {
+    ParseResult<void> parse(const char *str, const char *end)
+    {
+      ParseResult<String> res = StringParser::parse_string(minlen, maxlen, str, end);
+      if (!res.err) {
+        static_cast<T *>(this)->val() = res.result;
+
+        if (res.result.length() & 1) {
+          // Odd number of chars, can't be a hex coded string.
+          return res;
+        }
+        if (!std::all_of(res.result.begin(), res.result.end(), [](const char ch){ return isxdigit(ch); })) {
+          // Not all chars are hex digits.
+          return res;
+        }
+        String hexStr;
+        hexStr.reserve(res.result.length()/2);
+        for (auto it = res.result.begin(); it != res.result.end(); ++it) {
+          const unsigned char ch1 = static_cast<unsigned const char>(*it++);
+          const unsigned char ch2 = static_cast<unsigned const char>(*it);
+          uint8_t val = (isdigit(ch1) ? ch1 - '0' : toupper(ch1) - 'A' + 10) * 16 +
+                        (isdigit(ch2) ? ch2 - '0' : toupper(ch2) - 'A' + 10);
+          hexStr.concat(static_cast<char>(val));
+        }
+        static_cast<T *>(this)->val() = hexStr;
+      }
+      return res;
+    }
+  };
+
   // A timestamp is essentially a string using YYMMDDhhmmssX format (where
   // X is W or S for wintertime or summertime). Parsing this into a proper
   // (UNIX) timestamp is hard to do generically. Parsing it into a
@@ -594,6 +629,9 @@ namespace dsmr
     /* Image Module Version and checksum*/
     DEFINE_FIELD(fw_module_version, FixedValue, ObisId(1, 1, 0, 2, 0), FixedField, units::none, units::none);
     DEFINE_FIELD(fw_module_checksum, String, ObisId(1, 1, 0, 2, 8), StringField, 0, 8);
+
+    DEFINE_FIELD(equipment_id, String, ObisId(0, 0, 96, 1, 1), HexStringField, 0, 32);
+    DEFINE_FIELD(consumer_msg, String, ObisId(0, 0, 96, 1, 1), HexStringField, 0, 36);
   } // namespace fields
 
 } // namespace dsmr
