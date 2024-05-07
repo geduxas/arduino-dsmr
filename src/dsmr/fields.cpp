@@ -73,8 +73,8 @@ constexpr char p1_version_be::name[];
 constexpr ObisId timestamp::id;
 constexpr char timestamp::name[];
 
-constexpr ObisId equipment_id::id;
-constexpr char equipment_id::name[];
+//constexpr ObisId equipment_id::id;
+//constexpr char equipment_id::name[];
 
 /* extra for Lux */
 constexpr ObisId energy_delivered_lux::id;
@@ -402,8 +402,8 @@ constexpr char water_delivered::name[];
 constexpr ObisId sub_device_type::id;
 constexpr char sub_device_type::name[];
 
-//constexpr ObisId sub_equipment_id::id;
-//constexpr char sub_equipment_id::name[];
+constexpr ObisId sub_equipment_id::id;
+constexpr char sub_equipment_id::name[];
 
 constexpr ObisId sub_valve_position::id;
 constexpr char sub_valve_position::name[];
