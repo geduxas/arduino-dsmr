@@ -586,7 +586,7 @@ namespace dsmr
     DEFINE_FIELD(sub_device_type, uint16_t, ObisId(0, SUB_MBUS_ID, 24, 1, 0), IntField, units::none);
 
     /* Equipment identifier (Thermal: heat or cold) */
-    DEFINE_FIELD(sub_equipment_id, String, ObisId(0, SUB_MBUS_ID, 96, 1, 0), StringField, 0, 96);
+    //DEFINE_FIELD(sub_equipment_id, String, ObisId(0, SUB_MBUS_ID, 96, 1, 0), StringField, 0, 96);
 
     /* Valve position (on/off/released) (Note: Removed in 4.0.7 / 4.2.2 / 5.0). */
     DEFINE_FIELD(sub_valve_position, uint8_t, ObisId(0, SUB_MBUS_ID, 24, 4, 0), IntField, units::none);
