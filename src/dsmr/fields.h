@@ -310,7 +310,7 @@ namespace dsmr
     DEFINE_FIELD(timestamp, String, ObisId(0, 0, 1, 0, 0), TimestampField);
 
     /* Equipment identifier */
-    DEFINE_FIELD(equipment_id, String, ObisId(0, 0, 96, 1, 1), StringField, 0, 96);
+    //DEFINE_FIELD(equipment_id, String, ObisId(0, 0, 96, 1, 1), StringField, 0, 96);
 
     /* Meter Reading electricity delivered to client (Special for Lux) in 0,001 kWh */
     DEFINE_FIELD(energy_delivered_lux, FixedValue, ObisId(1, 0, 1, 8, 0), FixedField, units::kWh, units::Wh);
@@ -586,7 +586,7 @@ namespace dsmr
     DEFINE_FIELD(sub_device_type, uint16_t, ObisId(0, SUB_MBUS_ID, 24, 1, 0), IntField, units::none);
 
     /* Equipment identifier (Thermal: heat or cold) */
-    //DEFINE_FIELD(sub_equipment_id, String, ObisId(0, SUB_MBUS_ID, 96, 1, 0), StringField, 0, 96);
+    DEFINE_FIELD(sub_equipment_id, String, ObisId(0, SUB_MBUS_ID, 96, 1, 0), StringField, 0, 96);
 
     /* Valve position (on/off/released) (Note: Removed in 4.0.7 / 4.2.2 / 5.0). */
     DEFINE_FIELD(sub_valve_position, uint8_t, ObisId(0, SUB_MBUS_ID, 24, 4, 0), IntField, units::none);
