@@ -630,7 +630,7 @@ namespace dsmr
     DEFINE_FIELD(fw_module_checksum, String, ObisId(1, 1, 0, 2, 8), StringField, 0, 8);
 
     DEFINE_FIELD(equipment_id, String, ObisId(0, 0, 96, 1, 1), HexStringField, 0, 32);
-    DEFINE_FIELD(consumer_msg, String, ObisId(0, 0, 96, 13, 1), HexStringField, 0, 36);
+    DEFINE_FIELD(consumer_msg, String, ObisId(0, 0, 96, 13, 0), HexStringField, 0, 36);
   } // namespace fields
 
 } // namespace dsmr
