@@ -279,7 +279,6 @@ namespace dsmr
       static constexpr char VA[] = "VA";
       static constexpr char s[] = "s";
       static constexpr char Hz[] ="Hz";
-      static constexpr char kHz[] ="kHz";
     };
 
     const uint8_t GAS_MBUS_ID = DSMR_GAS_MBUS_ID;
@@ -453,7 +452,7 @@ namespace dsmr
     DEFINE_FIELD(voltage_avg_l3, FixedValue, ObisId(1, 0, 72, 24, 0), FixedField, units::V, units::mV);
   
     DEFINE_FIELD(voltage, FixedValue, ObisId(1, 0, 12, 7, 0), FixedField, units::V, units::mV);
-    DEFINE_FIELD(frequency, FixedValue, ObisId(1, 0, 14, 7, 0), FixedField, units::kHz, units::Hz);
+    DEFINE_FIELD(frequency, FixedValue, ObisId(1, 0, 14, 7, 0), FixedField, units::Hz, units::Hz);
     DEFINE_FIELD(abs_power, FixedValue, ObisId(1, 0, 15, 7, 0), FixedField, units::kW, units::W);
     
 
