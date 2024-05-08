@@ -58,7 +58,6 @@ constexpr char units::kVA[];
 constexpr char units::VA[];
 constexpr char units::s[];
 constexpr char units::Hz[];
-constexpr char units::kHz[];
 
 constexpr ObisId identification::id;
 constexpr char identification::name[];
