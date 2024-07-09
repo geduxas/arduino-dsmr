@@ -1,69 +1,28 @@
-# Arduino Dutch Smart meter (DSMR) parser
+# Dutch Smart meter (DSMR) parser
 
-This is an Arduino library for interfacing with Dutch smart meters, through
-their P1 port. This library can take care of controlling the "request" pin,
-reading messages and parsing them.
+This is a library for parsing messages from Dutch smart meters, through
+their P1 port.
 
-This code was written for Arduino, but most of the parsing code it is pretty
-generic C++ (except for the Arduino- and AVR-based string handling), so it
-should be possible to adapt for use outside of the Arduino environment.
-
-When using Arduino, version 1.6.6 or above is required because this
-library needs C++11 support which was enabled in that version.
+This code was originally written for Arduino, but by 
+[matthijskooijman](https://github.com/matthijskooijman) and has been adapted
+for use outside of the Arduino framework.
 
 ## Protocol
 
 Every smart meter in the Netherlands has to comply with the Dutch Smart
-Meter Requirements (DSMR). At the time of writing, DSMR 4.x is the
-current version. The DSMR 5.0 P1 specification is available and expected to
-be used in smart meters starting in 2016. This code should support both
-the 4.x and 5.0 specifications. 3.x meters might also work, but this has
-not been verified or tested (feedback welcome).
+Meter Requirements (DSMR). At the time of writing, DSMR 5.0.2 is the version
+in use in Belgium. This code should support both the 4.x and 5.0 specifications.
+3.x meters might also work, but this has not been verified or tested.
 
-The DSMR specifications can be found on [the site of Netbeheer
-Nederland][netbeheer], in particular on [this
-page][dossier-slimme-meter]. Of particular interest is the "P1 companion
-standard" that specifies the P1 port and protocol (though not very
-clearly). Specifications can also be found in the `specs` subdirectory
-of this repository (including some older versions that are no longer
-online, which is why I started collecting them here).
+A typical P1 message looks like this:
 
-[netbeheer]: http://www.netbeheernederland.nl
-[dossier-slimme-meter]: https://www.netbeheernederland.nl/dossiers/slimme-meter-15/documenten
+```
+/KFM5KAIFA-METER
 
-According to DSMR, every smart electricity meter needs to have a P1
-port. This is a [6p6c socket][6p6c] (commonly, but incorrectly referred
-to as RJ11 or RJ12). Telephone plugs will fit, provided that you have
-some that actually have 6 pins wired, or you have just 4 and do not need
-power from the P1 port.
-
-[6p6c]: http://en.wikipedia.org/wiki/Modular_connector#6P6C
-
-Pinouts and electrical specs can best be looked up in the spec (The 5.0
-version is the most clear in this regard, though not everything may
-apply to 4.x meters).
-
-Note that the message format for the P1 port is based on the IEC 62056-21
-"mode D" format. That spec is not available for free, though there seem
-to be [a version available on the net][iec62056-21]. DLMS also seems a
-related standard, but that apparently defines a binary format. It does
-seem all of these use "OBIS identifiers" and "COSEM data objects"
-(DLMS has [some lists of objects][objlists], of which 1001-7 seems to
-somewhat match th DSMR specs), to describe the various properties,
-though it's not entirely clear how all of these fit together. However,
-the DSMR spec has a complete, though sometimes confusing list of fields
-used.
-
-[iec62056-21]: https://www.ungelesen.net/protagWork/media/downloads/solar-steuerung/iec62056-21%7Bed1.0%7Den_.pdf
-[objlists]: http://www.dlms.com/documentation/listofstandardobiscodesandmaintenanceproces/index.html
-
-A typical P1 message looks something like this:
-
-    /KFM5KAIFA-METER
-
-    1-0:1.8.1(000671.578*kWh)
-    1-0:1.7.0(00.318*kW)
-    !1E1D
+1-0:1.8.1(000671.578*kWh)
+1-0:1.7.0(00.318*kW)
+!1E1D
+```
 
 This includes an identification header at the top, a checksum at the
 bottom, and one or more lines of data in the middle. This example is
@@ -80,17 +39,19 @@ messages, verifying the checksum and really parses each line according
 to the specifications. This should make for more reliable parsing, and
 allows for useful parser error messages:
 
-    1-0:1.8.1(000671.578*XWh)
-                         ^
-    Error: Invalid unit
+```
+1-0:1.8.1(000671.578*XWh)
+                      ^
+Error: Invalid unit
 
-    1-0:1.8.1(0006#71.578*kWh)
-                  ^
-    Error: Invalid number
+1-0:1.8.1(0006#71.578*kWh)
+              ^
+Error: Invalid number
 
-    !6F4A
-     ^
-    Checksum mismatch
+!6F4A
+  ^
+Checksum mismatch
+```
 
 This library uses C++ templates extensively. This allows defining a
 custom datatype by listing the fields you are interested in, and then
@@ -102,42 +63,49 @@ is parsed and stored into the corresponding field.
 As an example, consider we want to parse the identification and current
 power fields in the example message above. We define a datatype:
 
-    using MyData = ParsedData<
-      /* String */ identification,
-      /* FixedValue */ power_delivered
-    >;
+```cpp
+using MyData = ParsedData<
+  /* String */ identification,
+  /* FixedValue */ power_delivered
+>;
+```
 
-The syntax is a bit weird because of the template magic used, but the
-above essentially defines a struct with members for each field to be
-parsed. For each field, there is also an associated `xxx_present`
-member, which can be used to check whether the field was present in the
-parsed data (if it is false, the associated field contains uninitialized
-data). There is some extra stuff in the background, but the `MyData`
-can be used just like the below struct. It also takes up the same amount
-of space.
+The above defines a struct with members for each field to be parsed.
+For each field, there is also an associated `xxx_present` member, which
+can be used to check whether the field was present in the parsed data
+(if it is false, the associated field contains uninitialized data).
+There is some extra stuff in the background, but the `MyData` can be
+used just like the below struct. It also takes up the same amount of
+space.
 
-    struct MyData {
-    	bool identification_present;
-    	String identification;
-    	bool power_delivered_present;
-    	FixedValue power_delivered;
-    };
+```
+struct MyData {
+  bool identification_present;
+  String identification;
+  bool power_delivered_present;
+  FixedValue power_delivered;
+};
+```
 
 After this, call the parser. By passing our custom datatype defined
 above, the parser knows what fields to look for.
 
-      MyData data;
-      ParseResult<void> res = P1Parser::parse(&data, msg, lengthof(msg));
+```cpp
+MyData data;
+ParseResult<void> res = P1Parser::parse(&data, msg, lengthof(msg));
+```
 
 Finally, we can check if the parsing was succesful and access the parsed
-values as members of `data`:
+values as members of `data`: (Arduino framework code)
 
-      if (!res.err && res.all_present()) {
-        // Succesfully parsed, print results:
-        Serial.println(data.identification);
-        Serial.print(data.power_delivered.int_val());
-        Serial.println("W");
-      }
+```cpp
+if (!res.err && res.all_present()) {
+  // Succesfully parsed, print results:
+  Serial.println(data.identification);
+  Serial.print(data.power_delivered.int_val());
+  Serial.println("W");
+}
+```
 
 In this case, we check whether parsing was successful, but also check
 that all defined fields were present in the parsed message (using the
@@ -186,10 +154,12 @@ If you access the field directly, it will automatically be converted to
 version is sufficient, you can call the `int_val()` method to get the
 integer version returned.
 
-    // Print as float, in kW
-    Serial.print(data.power_delivered);
-    // Print as integer, in W
-    Serial.print(data.power_delivered.int_val());
+```cpp
+// Print as float, in kW
+Serial.print(data.power_delivered);
+// Print as integer, in W
+Serial.print(data.power_delivered.int_val());
+```
 
 Additionally there is a `TimestampedFixedValue` method, which works
 identically, but additionally has a `timestamp()` method which returns
@@ -206,22 +176,20 @@ original format.
 The P1 port essentially consists of three parts:
 
 - A 5V power supply (this was not present in 3.x).
-- A serial TX pin. This sends meter data using 0/5V signalling, using
-  idle low. Note that this is the voltage level commonly referred to as
-  "TTL serial", but the polarity is reversed (more like RS232). This
-  port uses 115200 bps 8N1 (3.x and before used 9600 bps).
+- A serial TX pin. The data pin of the P1-port is open drain (it is
+  implemented using an optocoupler) so an external pull-up has to be
+  added. 10k seems to work. A 10nF capacitor (to ground) might help
+  when you experience a noisy signal.
+  The port uses 115200 bps 8N1 (3.x and before used 9600 bps).
 - A request pin - 5V needs to be applied to this pin to start
-  generating output on the TX pin.
+  generating output on the TX pin. Applying 3.3V seems to work.
+  To disable the P1 output, put the mcu pin in high impedance mode
+  (INPUT) instead of pulling to ground.
 
-To connect to an Arduino that has an unused hardware serial port (like
-an Arduino Mega, Leonardo or Micro), the signal has to inverted. This
-can be done using a dedicated inverter IC, or just a transistor and some
-resistors.
-
-It's also possible to do all of the serial reception, including the
-inverting, in software using Arduino's SoftwareSerial library. However,
-it seems there are still occasional reception errors when using
-SoftwareSerial.
+It is advisable to use an mcu with more than one UART for easy debugging.
+MCUs like ESP32 can be powered by the 5V from the P1 port, have plenty of
+UART ports. The UART on ESP32 can also be inverted so no external circuitry
+is needed.
 
 ## Sub meters
 
