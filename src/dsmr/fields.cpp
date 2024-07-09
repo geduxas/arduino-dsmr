@@ -1,7 +1,8 @@
 /**
- * Arduino DSMR parser.
+ * DSMR parser.
  *
  * This software is licensed under the MIT License.
+ * Adapted for general use 2024 Bert Melis
  *
  * Copyright (c) 2015 Matthijs Kooijman <matthijs@stdin.nl>
  *
@@ -369,6 +370,9 @@ constexpr ObisId gas_delivered::id;
 constexpr char gas_delivered::name[];
 
 /* _BE */
+constexpr ObisId gas_equipment_id_be::id;
+constexpr char gas_equipment_id_be::name[];
+
 constexpr ObisId gas_delivered_be::id;
 constexpr char gas_delivered_be::name[];
 

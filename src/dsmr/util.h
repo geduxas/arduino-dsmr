@@ -1,9 +1,10 @@
 /**
- * Arduino DSMR parser.
+ * DSMR parser.
  *
  * This software is licensed under the MIT License.
  *
  * Copyright (c) 2015 Matthijs Kooijman <matthijs@stdin.nl>
+ * Adapted for general use 2024 Bert Melis
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -30,7 +31,8 @@
 
 #pragma once
 
-#include <Arduino.h>
+#include <string>  // std::string
+#include <cstring>  // memcpy
 
 namespace dsmr
 {
@@ -45,13 +47,13 @@ namespace dsmr
   // This appends the given number of bytes from the given C string to the
   // given Arduino string, without requiring a trailing NUL.
   // Requires that there _is_ room for nul-termination
-  static void concat_hack(String &s, const char *append, size_t n)
+  static void concat_hack(std::string &s, const char *append, size_t n)
   {
     // Add null termination. Inefficient, but it works...
     char buf[n + 1];
-    memcpy(buf, append, n);
+    std::memcpy(buf, append, n);
     buf[n] = 0;
-    s.concat(buf);
+    s += buf;
   }
 
   /**
@@ -140,9 +142,9 @@ namespace dsmr
    * characters in the total parsed string. These are needed to properly
    * limit the context output.
    */
-    String fullError(const char *start, const char *end) const
+    std::string fullError(const char *start, const char *end) const
     {
-      String res;
+      std::string res;
       if (this->ctx && start && end)
       {
         // Find the entire line surrounding the context

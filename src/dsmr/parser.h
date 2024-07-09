@@ -1,9 +1,10 @@
 /**
- * Arduino DSMR parser.
+ * DSMR parser.
  *
  * This software is licensed under the MIT License.
  *
  * Copyright (c) 2015 Matthijs Kooijman <matthijs@stdin.nl>
+ * Adapted for general use 2024 Bert Melis
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -141,9 +142,9 @@ namespace dsmr
 
   struct StringParser
   {
-    static ParseResult<String> parse_string(size_t min, size_t max, const char *str, const char *end)
+    static ParseResult<std::string> parse_string(size_t min, size_t max, const char *str, const char *end)
     {
-      ParseResult<String> res;
+      ParseResult<std::string> res;
       if (str >= end || *str != '(')
         return res.fail("Missing (", str);
 

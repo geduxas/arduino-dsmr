@@ -1,7 +1,8 @@
 /**
- * Arduino DSMR parser.
+ * DSMR parser.
  *
  * This software is licensed under the MIT License.
+ * Adapted for general use 2024 Bert Melis
  *
  * Copyright (c) 2015 Matthijs Kooijman <matthijs@stdin.nl>
  *
@@ -66,7 +67,7 @@ namespace dsmr
   {
     ParseResult<void> parse(const char *str, const char *end)
     {
-      ParseResult<String> res = StringParser::parse_string(minlen, maxlen, str, end);
+      ParseResult<std::string> res = StringParser::parse_string(minlen, maxlen, str, end);
       if (!res.err)
         static_cast<T *>(this)->val() = res.result;
       return res;
@@ -135,7 +136,7 @@ namespace dsmr
 
   struct TimestampedFixedValue : public FixedValue
   {
-    String timestamp;
+    std::string timestamp;
   };
 
   // Some numerical values are prefixed with a timestamp. This is simply
@@ -146,7 +147,7 @@ namespace dsmr
     ParseResult<void> parse(const char *str, const char *end)
     {
       // First, parse timestamp
-      ParseResult<String> res = StringParser::parse_string(13, 13, str, end);
+      ParseResult<std::string> res = StringParser::parse_string(13, 13, str, end);
       if (res.err)
         return res;
 
@@ -167,7 +168,7 @@ namespace dsmr
       // we parse last entry 2 times
       const char *last = end;
 
-      ParseResult<String> res;
+      ParseResult<std::string> res;
       res.next = str;
 
       while (res.next != end)
@@ -265,17 +266,17 @@ namespace dsmr
 
     /* Meter identification. This is not a normal field, but a
  * specially-formatted first line of the message */
-    DEFINE_FIELD(identification, String, ObisId(255, 255, 255, 255, 255, 255), RawField);
+    DEFINE_FIELD(identification, std::string, ObisId(255, 255, 255, 255, 255, 255), RawField);
 
     /* Version information for P1 output */
-    DEFINE_FIELD(p1_version, String, ObisId(1, 3, 0, 2, 8), StringField, 2, 2);
-    DEFINE_FIELD(p1_version_be, String, ObisId(0, 0, 96, 1, 4), StringField, 2, 96);
+    DEFINE_FIELD(p1_version, std::string, ObisId(1, 3, 0, 2, 8), StringField, 2, 2);
+    DEFINE_FIELD(p1_version_be, std::string, ObisId(0, 0, 96, 1, 4), StringField, 2, 96);
 
     /* Date-time stamp of the P1 message */
-    DEFINE_FIELD(timestamp, String, ObisId(0, 0, 1, 0, 0), TimestampField);
+    DEFINE_FIELD(timestamp, std::string, ObisId(0, 0, 1, 0, 0), TimestampField);
 
     /* Equipment identifier */
-    DEFINE_FIELD(equipment_id, String, ObisId(0, 0, 96, 1, 1), StringField, 0, 96);
+    DEFINE_FIELD(equipment_id, std::string, ObisId(0, 0, 96, 1, 1), StringField, 0, 96);
 
     /* Meter Reading electricity delivered to client (Special for Lux) in 0,001 kWh */
     /* TODO: by OBIS 1-0:1.8.0.255 IEC 62056 it should be Positive active energy (A+) total [kWh], should we rename it? */
@@ -325,7 +326,7 @@ namespace dsmr
     /* Tariff indicator electricity. The tariff indicator can also be used
  * to switch tariff dependent loads e.g boilers. This is the
  * responsibility of the P1 user */
-    DEFINE_FIELD(electricity_tariff, String, ObisId(0, 0, 96, 14, 0), StringField, 4, 4);
+    DEFINE_FIELD(electricity_tariff, std::string, ObisId(0, 0, 96, 14, 0), StringField, 4, 4);
 
     /* Actual electricity power delivered (+P) in 1 Watt resolution */
     DEFINE_FIELD(power_delivered, FixedValue, ObisId(1, 0, 1, 7, 0), FixedField, units::kW, units::W);
@@ -350,7 +351,7 @@ namespace dsmr
     DEFINE_FIELD(electricity_long_failures, uint32_t, ObisId(0, 0, 96, 7, 9), IntField, units::none);
 
     /* Power Failure Event Log (long power failures) */
-    DEFINE_FIELD(electricity_failure_log, String, ObisId(1, 0, 99, 97, 0), RawField);
+    DEFINE_FIELD(electricity_failure_log, std::string, ObisId(1, 0, 99, 97, 0), RawField);
 
     /* Number of voltage sags in phase L1 */
     DEFINE_FIELD(electricity_sags_l1, uint32_t, ObisId(1, 0, 32, 32, 0), IntField, units::none);
@@ -384,10 +385,10 @@ namespace dsmr
 
     /* Text message codes: numeric 8 digits (Note: Missing from 5.0 spec)
  * */
-    DEFINE_FIELD(message_short, String, ObisId(0, 0, 96, 13, 1), StringField, 0, 16);
+    DEFINE_FIELD(message_short, std::string, ObisId(0, 0, 96, 13, 1), StringField, 0, 16);
     /* Text message max 2048 characters (Note: Spec says 1024 in comment and
  * 2048 in format spec, so we stick to 2048). */
-    DEFINE_FIELD(message_long, String, ObisId(0, 0, 96, 13, 0), StringField, 0, 2048);
+    DEFINE_FIELD(message_long, std::string, ObisId(0, 0, 96, 13, 0), StringField, 0, 2048);
 
     /* Instantaneous voltage L1 in 0.1V resolution (Note: Spec says V
  * resolution in comment, but 0.1V resolution in format spec. Added in
@@ -495,9 +496,9 @@ namespace dsmr
     DEFINE_FIELD(gas_device_type, uint16_t, ObisId(0, GAS_MBUS_ID, 24, 1, 0), IntField, units::none);
 
     /* Equipment identifier (Gas) */
-    DEFINE_FIELD(gas_equipment_id, String, ObisId(0, GAS_MBUS_ID, 96, 1, 0), StringField, 0, 96);
+    DEFINE_FIELD(gas_equipment_id, std::string, ObisId(0, GAS_MBUS_ID, 96, 1, 0), StringField, 0, 96);
     /* Equipment identifier (Gas) BE */
-    DEFINE_FIELD(gas_equipment_id_be, String, ObisId(0, GAS_MBUS_ID, 96, 1, 1), StringField, 0, 96);
+    DEFINE_FIELD(gas_equipment_id_be, std::string, ObisId(0, GAS_MBUS_ID, 96, 1, 1), StringField, 0, 96);
 
     /* Valve position Gas (on/off/released) (Note: Removed in 4.0.7 / 4.2.2 / 5.0). */
     DEFINE_FIELD(gas_valve_position, uint8_t, ObisId(0, GAS_MBUS_ID, 24, 4, 0), IntField, units::none);
@@ -510,13 +511,13 @@ namespace dsmr
     /* _BE */
     DEFINE_FIELD(gas_delivered_be, TimestampedFixedValue, ObisId(0, GAS_MBUS_ID, 24, 2, 3), TimestampedFixedField,
                  units::m3, units::dm3);
-    DEFINE_FIELD(gas_delivered_text, String, ObisId(0, GAS_MBUS_ID, 24, 3, 0), RawField);
+    DEFINE_FIELD(gas_delivered_text, std::string, ObisId(0, GAS_MBUS_ID, 24, 3, 0), RawField);
 
     /* Device-Type */
     DEFINE_FIELD(thermal_device_type, uint16_t, ObisId(0, THERMAL_MBUS_ID, 24, 1, 0), IntField, units::none);
 
     /* Equipment identifier (Thermal: heat or cold) */
-    DEFINE_FIELD(thermal_equipment_id, String, ObisId(0, THERMAL_MBUS_ID, 96, 1, 0), StringField, 0, 96);
+    DEFINE_FIELD(thermal_equipment_id, std::string, ObisId(0, THERMAL_MBUS_ID, 96, 1, 0), StringField, 0, 96);
 
     /* Valve position (on/off/released) (Note: Removed in 4.0.7 / 4.2.2 / 5.0). */
     DEFINE_FIELD(thermal_valve_position, uint8_t, ObisId(0, THERMAL_MBUS_ID, 24, 4, 0), IntField, units::none);
@@ -530,7 +531,7 @@ namespace dsmr
     DEFINE_FIELD(water_device_type, uint16_t, ObisId(0, WATER_MBUS_ID, 24, 1, 0), IntField, units::none);
 
     /* Equipment identifier (Thermal: heat or cold) */
-    DEFINE_FIELD(water_equipment_id, String, ObisId(0, WATER_MBUS_ID, 96, 1, 0), StringField, 0, 96);
+    DEFINE_FIELD(water_equipment_id, std::string, ObisId(0, WATER_MBUS_ID, 96, 1, 0), StringField, 0, 96);
 
     /* Valve position (on/off/released) (Note: Removed in 4.0.7 / 4.2.2 / 5.0). */
     DEFINE_FIELD(water_valve_position, uint8_t, ObisId(0, WATER_MBUS_ID, 24, 4, 0), IntField, units::none);
@@ -544,7 +545,7 @@ namespace dsmr
     DEFINE_FIELD(sub_device_type, uint16_t, ObisId(0, SUB_MBUS_ID, 24, 1, 0), IntField, units::none);
 
     /* Equipment identifier (Thermal: heat or cold) */
-    DEFINE_FIELD(sub_equipment_id, String, ObisId(0, SUB_MBUS_ID, 96, 1, 0), StringField, 0, 96);
+    DEFINE_FIELD(sub_equipment_id, std::string, ObisId(0, SUB_MBUS_ID, 96, 1, 0), StringField, 0, 96);
 
     /* Valve position (on/off/released) (Note: Removed in 4.0.7 / 4.2.2 / 5.0). */
     DEFINE_FIELD(sub_valve_position, uint8_t, ObisId(0, SUB_MBUS_ID, 24, 4, 0), IntField, units::none);
@@ -576,10 +577,10 @@ namespace dsmr
 
     /* Image Core Version and checksum */
     DEFINE_FIELD(fw_core_version, FixedValue, ObisId(1, 0, 0, 2, 0), FixedField, units::none, units::none);
-    DEFINE_FIELD(fw_core_checksum, String, ObisId(1, 0, 0, 2, 8), StringField, 0, 8);
+    DEFINE_FIELD(fw_core_checksum, std::string, ObisId(1, 0, 0, 2, 8), StringField, 0, 8);
     /* Image Module Version and checksum */
     DEFINE_FIELD(fw_module_version, FixedValue, ObisId(1, 1, 0, 2, 0), FixedField, units::none, units::none);
-    DEFINE_FIELD(fw_module_checksum, String, ObisId(1, 1, 0, 2, 8), StringField, 0, 8);
+    DEFINE_FIELD(fw_module_checksum, std::string, ObisId(1, 1, 0, 2, 8), StringField, 0, 8);
       
   } // namespace fields
 
