@@ -31,6 +31,8 @@
 
 #pragma once
 
+#include <string>
+
 #include "util.h"
 #include "parser.h"
 
@@ -65,7 +67,7 @@ namespace dsmr
   template <typename T, size_t minlen, size_t maxlen>
   struct StringField : ParsedField<T>
   {
-    ParseResult<void> parse(const char *str, const char *end)
+    ParseResult<void> parse(char *str, char *end)
     {
       ParseResult<std::string> res = StringParser::parse_string(minlen, maxlen, str, end);
       if (!res.err)
@@ -109,7 +111,7 @@ namespace dsmr
   template <typename T, const char *_unit, const char *_int_unit>
   struct FixedField : ParsedField<T>
   {
-    ParseResult<void> parse(const char *str, const char *end)
+    ParseResult<void> parse(char *str, char *end)
     {
       // Check if the value is a float value, plus its expected unit type.
       ParseResult<uint32_t> res_float = NumParser::parse(3, _unit, str, end);
@@ -144,7 +146,7 @@ namespace dsmr
   template <typename T, const char *_unit, const char *_int_unit>
   struct TimestampedFixedField : public FixedField<T, _unit, _int_unit>
   {
-    ParseResult<void> parse(const char *str, const char *end)
+    ParseResult<void> parse(char *str, char *end)
     {
       // First, parse timestamp
       ParseResult<std::string> res = StringParser::parse_string(13, 13, str, end);
@@ -163,10 +165,10 @@ namespace dsmr
   template <typename T, const char *_unit, const char *_int_unit>
   struct LastFixedField : public FixedField<T, _unit, _int_unit>
   {
-    ParseResult<void> parse(const char *str, const char *end)
+    ParseResult<void> parse(char *str, char *end)
     {
       // we parse last entry 2 times
-      const char *last = end;
+      char *last = end;
 
       ParseResult<std::string> res;
       res.next = str;
@@ -188,7 +190,7 @@ namespace dsmr
   template <typename T, const char *_unit>
   struct IntField : ParsedField<T>
   {
-    ParseResult<void> parse(const char *str, const char *end)
+    ParseResult<void> parse(char *str, char *end)
     {
       ParseResult<uint32_t> res = NumParser::parse(0, _unit, str, end);
       if (!res.err)
@@ -204,10 +206,10 @@ namespace dsmr
   template <typename T>
   struct RawField : ParsedField<T>
   {
-    ParseResult<void> parse(const char *str, const char *end)
+    ParseResult<void> parse(char *str, char *end)
     {
       // Just copy the string verbatim value without any parsing
-      concat_hack(static_cast<T *>(this)->val(), str, end - str);
+      static_cast<T *>(this)->val().append(str, end - str);
       return ParseResult<void>().until(end);
     }
   };

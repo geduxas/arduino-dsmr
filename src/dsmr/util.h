@@ -31,8 +31,9 @@
 
 #pragma once
 
-#include <string>  // std::string
 #include <cstring>  // memcpy
+#include <cstdint>  // uint8_t...
+#include <cstdlib>  // malloc
 
 namespace dsmr
 {
@@ -42,19 +43,6 @@ namespace dsmr
  */
   template <typename T, unsigned int sz>
   inline unsigned int lengthof(const T (&)[sz]) { return sz; }
-
-  // Hack until https://github.com/arduino/Arduino/pull/1936 is merged.
-  // This appends the given number of bytes from the given C string to the
-  // given Arduino string, without requiring a trailing NUL.
-  // Requires that there _is_ room for nul-termination
-  static void concat_hack(std::string &s, const char *append, size_t n)
-  {
-    // Add null termination. Inefficient, but it works...
-    char buf[n + 1];
-    std::memcpy(buf, append, n);
-    buf[n] = 0;
-    s += buf;
-  }
 
   /**
  * The ParseResult<T> class wraps the result of a parse function. The type
@@ -115,7 +103,7 @@ namespace dsmr
   template <typename T>
   struct ParseResult : public _ParseResult<ParseResult<T>, T>
   {
-    const char *next = NULL;
+    char *next = NULL;
     const char *err = NULL;
     const char *ctx = NULL;
 
@@ -125,7 +113,7 @@ namespace dsmr
       this->ctx = ctx;
       return *this;
     }
-    ParseResult &until(const char *next)
+    ParseResult &until(char *next)
     {
       this->next = next;
       return *this;
@@ -142,9 +130,10 @@ namespace dsmr
    * characters in the total parsed string. These are needed to properly
    * limit the context output.
    */
-    std::string fullError(const char *start, const char *end) const
+    char * fullError(const char *start, const char *end) const
     {
-      std::string res;
+      char *res;
+      size_t index = 0;
       if (this->ctx && start && end)
       {
         // Find the entire line surrounding the context
@@ -157,19 +146,27 @@ namespace dsmr
 
         // We can now predict the context string length, so let String allocate
         // memory in advance
-        res.reserve((line_end - line_start) + 2 + (this->ctx - line_start) + 1 + 2);
+        size_t length = (line_end - line_start) + 2 + (this->ctx - line_start) + 1 + 2;
+        res = reinterpret_cast<char*>(malloc(length));
+        if (!res) return res;
+        res[length - 1] = '\0';
 
         // Write the line
-        concat_hack(res, line_start, line_end - line_start);
-        res += "\r\n";
+        memcpy(&res[index], line_start, line_end - line_start);
+        index = line_end - line_start;
+
+        res[index++] = '\r';
+        res[index++] = '\n';
 
         // Write a marker to point out ctx
-        while (line_start++ < this->ctx)
-          res += ' ';
-        res += '^';
-        res += "\r\n";
+        while (line_start++ < this->ctx) {
+          res[index++] = ' ';
+        }
+        res[index++] = '^';
+        res[index++] = '\r';
+        res[index++] = '\n';
       }
-      res += this->err;
+      memcpy(&res[index], this->err, strlen(this->err));
       return res;
     }
   };
