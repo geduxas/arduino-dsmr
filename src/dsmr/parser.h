@@ -240,7 +240,7 @@ namespace dsmr
 
   struct ObisIdParser
   {
-    static ParseResult<ObisId> parse(char *str, char *end)
+    static ParseResult<ObisId> parse(char *str, const char *end)
     {
       // Parse a Obis ID of the form 1-2:3.4.5.6
       // Stops parsing on the first unrecognized character. Any unparsed
@@ -385,7 +385,7 @@ namespace dsmr
    * checksum. Does not verify the checksum.
    */
     template <typename... Ts>
-    static ParseResult<void> parse_data(ParsedData<Ts...> *data, char *str, char *end,
+    static ParseResult<void> parse_data(ParsedData<Ts...> *data, char *str, const char *end,
                                         bool unknown_error = false)
     {
       ParseResult<void> res;
