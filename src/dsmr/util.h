@@ -81,14 +81,14 @@ namespace dsmr
   {
     T result;
 
-    P &succeed(T &result)
+    P &succeed(T &res)
     {
-      this->result = result;
+      result = res;
       return *static_cast<P *>(this);
     }
-    P &succeed(T &&result)
+    P &succeed(T &&res)
     {
-      this->result = result;
+      result = res;
       return *static_cast<P *>(this);
     }
   };
