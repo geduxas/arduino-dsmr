@@ -3,9 +3,25 @@
 This is a library for parsing messages from Dutch smart meters, through
 their P1 port.
 
-This code was originally written for Arduino, but by 
+This code was originally written for Arduino by 
 [matthijskooijman](https://github.com/matthijskooijman) and has been adapted
 for use outside of the Arduino framework.
+
+## Differences in this fork
+
+What is different in this fork?
+Parsing is done on `char*` instead of `const char*`. This enables in-buffer
+parsing. Parsed data is not copied into separate variables. Instead, parsed
+data just points to the right location in the input data. For c-strings to
+work, a null-terminator is inserted into the input data. Yes, your input
+data buffer is altered and therefore is is not `const`.
+
+Consequences:
+- this fork might not fit in your code
+- upside: no duplication of string-data
+- except for the `fullError`-function, no dynamic memory is allocated. This
+  function now has one big attention point: it returns a pointer which you
+  have to free.
 
 ## Protocol
 
@@ -126,9 +142,10 @@ need, to make the parsing and printing code smaller and faster.
 
 ## Parsed value types
 
-Some values are parsed to an Arduino `String` value or C++ integer type,
-those should be fairly straightforward. There are three special types
-that need some explanation: `FixedValue` and `TimestampedFixedValue`.
+Some values are parsed to a `const char*` value (null-terminated) or
+C++ integer type, those should be fairly straightforward. There are
+three special types that need some explanation: `FixedValue` and
+`TimestampedFixedValue`.
 
 When looking at the DSMR P1 format, it defines a floating point format.
 It is described as `Fn(x,y)`, where `n` is the total number of (decimal)
@@ -165,11 +182,11 @@ Additionally there is a `TimestampedFixedValue` method, which works
 identically, but additionally has a `timestamp()` method which returns
 the timestamp sent along with the value.
 
-These timestamps are returned as a string, exactly as present in the P1
-message (YYMMDDhhmmssX, where X is S or W for summer- or wintertime).
-Parsing these into something like a UNIX timestamp is tricky (think
-leap years and seconds) and of limited use, so this just keeps the
-original format.
+These timestamps are returned as a `const char*` (null-terminated),
+exactly as present in the P1 message (YYMMDDhhmmssX, where X is S or
+W for summer- or wintertime). Parsing these into something like a UNIX
+timestamp is tricky (think leap years and seconds) and of limited use,
+so this just keeps the original format.
 
 ## Connecting the P1 port
 
