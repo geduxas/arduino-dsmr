@@ -132,21 +132,21 @@ namespace dsmr
    */
     char * fullError(const char *start, const char *end) const
     {
-      char *res;
+      char *res = nullptr;
       size_t index = 0;
       if (this->ctx && start && end)
       {
         // Find the entire line surrounding the context
         const char *line_end = this->ctx;
-        while (line_end < end && line_end[0] != '\r' && line_end[0] != '\n')
+        while (line_end < end && line_end[0] != '\r' && line_end[0] != '\n' && line_end[0] != '\0')
           ++line_end;
         const char *line_start = this->ctx;
-        while (line_start > start && line_start[-1] != '\r' && line_start[-1] != '\n')
+        while (line_start > start && line_start[-1] != '\r' && line_start[-1] != '\n' && line_end[0] != '\0')
           --line_start;
 
         // We can now predict the context string length, so let String allocate
         // memory in advance
-        size_t length = (line_end - line_start) + 2 + (this->ctx - line_start) + 1 + 2;
+        size_t length = (line_end - line_start) + 2 + (this->ctx - line_start) + 1 + 2 + strlen(this->err) + 1;
         res = reinterpret_cast<char*>(malloc(length));
         if (!res) return res;
         res[length - 1] = '\0';
@@ -160,13 +160,14 @@ namespace dsmr
 
         // Write a marker to point out ctx
         while (line_start++ < this->ctx) {
-          res[index++] = ' ';
+          res[index] = ' ';
+          ++index;
         }
         res[index++] = '^';
         res[index++] = '\r';
         res[index++] = '\n';
       }
-      memcpy(&res[index], this->err, strlen(this->err));
+      if (res) memcpy(&res[index], this->err, strlen(this->err));
       return res;
     }
   };

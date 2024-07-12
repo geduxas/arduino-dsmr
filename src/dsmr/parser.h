@@ -31,8 +31,6 @@
 
 #pragma once
 
-#include <string>
-
 #include "crc16.h"
 #include "util.h"
 
@@ -144,9 +142,9 @@ namespace dsmr
 
   struct StringParser
   {
-    static ParseResult<std::string> parse_string(size_t min, size_t max, char *str, char *end)
+    static ParseResult<const char*> parse_string(size_t min, size_t max, char *str, char *end)
     {
-      ParseResult<std::string> res;
+      ParseResult<const char*> res;
       if (str >= end || *str != '(')
         return res.fail("Missing (", str);
 
@@ -163,7 +161,8 @@ namespace dsmr
       if (len < min || len > max)
         return res.fail("Invalid string length", str_start);
 
-      res.result.append(str_start, len);
+      str_start[len] = '\0';
+      res.result = str_start;
 
       return res.until(str_end + 1); // Skip )
     }

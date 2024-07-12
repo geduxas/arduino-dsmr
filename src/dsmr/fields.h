@@ -31,8 +31,6 @@
 
 #pragma once
 
-#include <string>
-
 #include "util.h"
 #include "parser.h"
 
@@ -69,7 +67,7 @@ namespace dsmr
   {
     ParseResult<void> parse(char *str, char *end)
     {
-      ParseResult<std::string> res = StringParser::parse_string(minlen, maxlen, str, end);
+      ParseResult<const char*> res = StringParser::parse_string(minlen, maxlen, str, end);
       if (!res.err)
         static_cast<T *>(this)->val() = res.result;
       return res;
@@ -138,7 +136,7 @@ namespace dsmr
 
   struct TimestampedFixedValue : public FixedValue
   {
-    std::string timestamp;
+    const char* timestamp;
   };
 
   // Some numerical values are prefixed with a timestamp. This is simply
@@ -149,7 +147,7 @@ namespace dsmr
     ParseResult<void> parse(char *str, char *end)
     {
       // First, parse timestamp
-      ParseResult<std::string> res = StringParser::parse_string(13, 13, str, end);
+      ParseResult<const char*> res = StringParser::parse_string(13, 13, str, end);
       if (res.err)
         return res;
 
@@ -170,7 +168,7 @@ namespace dsmr
       // we parse last entry 2 times
       char *last = end;
 
-      ParseResult<std::string> res;
+      ParseResult<const char*> res;
       res.next = str;
 
       while (res.next != end)
@@ -179,10 +177,42 @@ namespace dsmr
         res = StringParser::parse_string(1, 20, res.next, end);
         if (res.err)
           return res;
-      } 
+      }
 
       // (04.329*kW) Which is followed by the numerical value
       return FixedField<T, _unit, _int_unit>::parse(last, end);
+    }
+  };
+
+    // Take the last value of multiple values
+  // e.g. 0-0:98.1.0(1)(1-0:1.6.0)(1-0:1.6.0)(230201000000W)(230117224500W)(04.329*kW)
+  template <typename T, const char *_unit, const char *_int_unit>
+  struct MultiFixedField : public FixedField<T, _unit, _int_unit>
+  {
+    ParseResult<void> parse(char *str, char *end)
+    {
+      ParseResult<uint32_t> res_int = NumParser::parse(0, "", str, end);
+      if (res_int.err) {
+        return res_int;
+      }
+
+      uint32_t numberOfValues = res_int.result;
+
+      ParseResult<const char*> res;
+      res.next = res_int.next;
+
+      // 2 for ObisId + 3 times for every "double timestamped value"
+      size_t i = 2 + (numberOfValues * 3);
+      while (--i)
+      {
+        res = StringParser::parse_string(1, 20, res.next, end);
+        if (res.err) {
+          return res;
+        }
+      }
+
+      // (04.329*kW) Which is followed by the numerical value
+      return FixedField<T, _unit, _int_unit>::parse(res.next, end);
     }
   };
 
@@ -201,7 +231,7 @@ namespace dsmr
     static const char *unit() { return _unit; }
   };
 
-  // A RawField is not parsed, the entire value (including any
+  // A RawField is not parsed, the entire value (without
   // parenthesis around it) is returned as a string.
   template <typename T>
   struct RawField : ParsedField<T>
@@ -209,7 +239,8 @@ namespace dsmr
     ParseResult<void> parse(char *str, char *end)
     {
       // Just copy the string verbatim value without any parsing
-      static_cast<T *>(this)->val().append(str, end - str);
+      str[end - str] = '\0';
+      static_cast<T *>(this)->val() = str;
       return ParseResult<void>().until(end);
     }
   };
@@ -268,17 +299,17 @@ namespace dsmr
 
     /* Meter identification. This is not a normal field, but a
  * specially-formatted first line of the message */
-    DEFINE_FIELD(identification, std::string, ObisId(255, 255, 255, 255, 255, 255), RawField);
+    DEFINE_FIELD(identification, const char*, ObisId(255, 255, 255, 255, 255, 255), RawField);
 
     /* Version information for P1 output */
-    DEFINE_FIELD(p1_version, std::string, ObisId(1, 3, 0, 2, 8), StringField, 2, 2);
-    DEFINE_FIELD(p1_version_be, std::string, ObisId(0, 0, 96, 1, 4), StringField, 2, 96);
+    DEFINE_FIELD(p1_version, const char*, ObisId(1, 3, 0, 2, 8), StringField, 2, 2);
+    DEFINE_FIELD(p1_version_be, const char*, ObisId(0, 0, 96, 1, 4), StringField, 2, 96);
 
     /* Date-time stamp of the P1 message */
-    DEFINE_FIELD(timestamp, std::string, ObisId(0, 0, 1, 0, 0), TimestampField);
+    DEFINE_FIELD(timestamp, const char*, ObisId(0, 0, 1, 0, 0), TimestampField);
 
     /* Equipment identifier */
-    DEFINE_FIELD(equipment_id, std::string, ObisId(0, 0, 96, 1, 1), StringField, 0, 96);
+    DEFINE_FIELD(equipment_id, const char*, ObisId(0, 0, 96, 1, 1), StringField, 0, 96);
 
     /* Meter Reading electricity delivered to client (Special for Lux) in 0,001 kWh */
     /* TODO: by OBIS 1-0:1.8.0.255 IEC 62056 it should be Positive active energy (A+) total [kWh], should we rename it? */
@@ -328,7 +359,7 @@ namespace dsmr
     /* Tariff indicator electricity. The tariff indicator can also be used
  * to switch tariff dependent loads e.g boilers. This is the
  * responsibility of the P1 user */
-    DEFINE_FIELD(electricity_tariff, std::string, ObisId(0, 0, 96, 14, 0), StringField, 4, 4);
+    DEFINE_FIELD(electricity_tariff, const char*, ObisId(0, 0, 96, 14, 0), StringField, 4, 4);
 
     /* Actual electricity power delivered (+P) in 1 Watt resolution */
     DEFINE_FIELD(power_delivered, FixedValue, ObisId(1, 0, 1, 7, 0), FixedField, units::kW, units::W);
@@ -353,7 +384,7 @@ namespace dsmr
     DEFINE_FIELD(electricity_long_failures, uint32_t, ObisId(0, 0, 96, 7, 9), IntField, units::none);
 
     /* Power Failure Event Log (long power failures) */
-    DEFINE_FIELD(electricity_failure_log, std::string, ObisId(1, 0, 99, 97, 0), RawField);
+    DEFINE_FIELD(electricity_failure_log, const char*, ObisId(1, 0, 99, 97, 0), RawField);
 
     /* Number of voltage sags in phase L1 */
     DEFINE_FIELD(electricity_sags_l1, uint32_t, ObisId(1, 0, 32, 32, 0), IntField, units::none);
@@ -387,10 +418,10 @@ namespace dsmr
 
     /* Text message codes: numeric 8 digits (Note: Missing from 5.0 spec)
  * */
-    DEFINE_FIELD(message_short, std::string, ObisId(0, 0, 96, 13, 1), StringField, 0, 16);
+    DEFINE_FIELD(message_short, const char*, ObisId(0, 0, 96, 13, 1), StringField, 0, 16);
     /* Text message max 2048 characters (Note: Spec says 1024 in comment and
  * 2048 in format spec, so we stick to 2048). */
-    DEFINE_FIELD(message_long, std::string, ObisId(0, 0, 96, 13, 0), StringField, 0, 2048);
+    DEFINE_FIELD(message_long, const char*, ObisId(0, 0, 96, 13, 0), StringField, 0, 2048);
 
     /* Instantaneous voltage L1 in 0.1V resolution (Note: Spec says V
  * resolution in comment, but 0.1V resolution in format spec. Added in
@@ -498,9 +529,9 @@ namespace dsmr
     DEFINE_FIELD(gas_device_type, uint16_t, ObisId(0, GAS_MBUS_ID, 24, 1, 0), IntField, units::none);
 
     /* Equipment identifier (Gas) */
-    DEFINE_FIELD(gas_equipment_id, std::string, ObisId(0, GAS_MBUS_ID, 96, 1, 0), StringField, 0, 96);
+    DEFINE_FIELD(gas_equipment_id, const char*, ObisId(0, GAS_MBUS_ID, 96, 1, 0), StringField, 0, 96);
     /* Equipment identifier (Gas) BE */
-    DEFINE_FIELD(gas_equipment_id_be, std::string, ObisId(0, GAS_MBUS_ID, 96, 1, 1), StringField, 0, 96);
+    DEFINE_FIELD(gas_equipment_id_be, const char*, ObisId(0, GAS_MBUS_ID, 96, 1, 1), StringField, 0, 96);
 
     /* Valve position Gas (on/off/released) (Note: Removed in 4.0.7 / 4.2.2 / 5.0). */
     DEFINE_FIELD(gas_valve_position, uint8_t, ObisId(0, GAS_MBUS_ID, 24, 4, 0), IntField, units::none);
@@ -513,13 +544,13 @@ namespace dsmr
     /* _BE */
     DEFINE_FIELD(gas_delivered_be, TimestampedFixedValue, ObisId(0, GAS_MBUS_ID, 24, 2, 3), TimestampedFixedField,
                  units::m3, units::dm3);
-    DEFINE_FIELD(gas_delivered_text, std::string, ObisId(0, GAS_MBUS_ID, 24, 3, 0), RawField);
+    DEFINE_FIELD(gas_delivered_text, const char*, ObisId(0, GAS_MBUS_ID, 24, 3, 0), RawField);
 
     /* Device-Type */
     DEFINE_FIELD(thermal_device_type, uint16_t, ObisId(0, THERMAL_MBUS_ID, 24, 1, 0), IntField, units::none);
 
     /* Equipment identifier (Thermal: heat or cold) */
-    DEFINE_FIELD(thermal_equipment_id, std::string, ObisId(0, THERMAL_MBUS_ID, 96, 1, 0), StringField, 0, 96);
+    DEFINE_FIELD(thermal_equipment_id, const char*, ObisId(0, THERMAL_MBUS_ID, 96, 1, 0), StringField, 0, 96);
 
     /* Valve position (on/off/released) (Note: Removed in 4.0.7 / 4.2.2 / 5.0). */
     DEFINE_FIELD(thermal_valve_position, uint8_t, ObisId(0, THERMAL_MBUS_ID, 24, 4, 0), IntField, units::none);
@@ -533,7 +564,7 @@ namespace dsmr
     DEFINE_FIELD(water_device_type, uint16_t, ObisId(0, WATER_MBUS_ID, 24, 1, 0), IntField, units::none);
 
     /* Equipment identifier (Thermal: heat or cold) */
-    DEFINE_FIELD(water_equipment_id, std::string, ObisId(0, WATER_MBUS_ID, 96, 1, 0), StringField, 0, 96);
+    DEFINE_FIELD(water_equipment_id, const char*, ObisId(0, WATER_MBUS_ID, 96, 1, 0), StringField, 0, 96);
 
     /* Valve position (on/off/released) (Note: Removed in 4.0.7 / 4.2.2 / 5.0). */
     DEFINE_FIELD(water_valve_position, uint8_t, ObisId(0, WATER_MBUS_ID, 24, 4, 0), IntField, units::none);
@@ -547,7 +578,7 @@ namespace dsmr
     DEFINE_FIELD(sub_device_type, uint16_t, ObisId(0, SUB_MBUS_ID, 24, 1, 0), IntField, units::none);
 
     /* Equipment identifier (Thermal: heat or cold) */
-    DEFINE_FIELD(sub_equipment_id, std::string, ObisId(0, SUB_MBUS_ID, 96, 1, 0), StringField, 0, 96);
+    DEFINE_FIELD(sub_equipment_id, const char*, ObisId(0, SUB_MBUS_ID, 96, 1, 0), StringField, 0, 96);
 
     /* Valve position (on/off/released) (Note: Removed in 4.0.7 / 4.2.2 / 5.0). */
     DEFINE_FIELD(sub_valve_position, uint8_t, ObisId(0, SUB_MBUS_ID, 24, 4, 0), IntField, units::none);
@@ -575,14 +606,14 @@ namespace dsmr
     /*Maximum energy consumption from the current month*/
     DEFINE_FIELD(active_energy_import_maximum_demand_running_month, TimestampedFixedValue, ObisId(1, 0, 1, 6, 0), TimestampedFixedField, units::kW, units::W);
     /*Maximum energy consumption from the last 13 months*/
-    DEFINE_FIELD(active_energy_import_maximum_demand_last_13_months, FixedValue, ObisId(0, 0, 98, 1, 0), LastFixedField, units::kW, units::W);
+    DEFINE_FIELD(active_energy_import_maximum_demand_last_13_months, FixedValue, ObisId(0, 0, 98, 1, 0), MultiFixedField, units::kW, units::W);
 
     /* Image Core Version and checksum */
     DEFINE_FIELD(fw_core_version, FixedValue, ObisId(1, 0, 0, 2, 0), FixedField, units::none, units::none);
-    DEFINE_FIELD(fw_core_checksum, std::string, ObisId(1, 0, 0, 2, 8), StringField, 0, 8);
+    DEFINE_FIELD(fw_core_checksum, const char*, ObisId(1, 0, 0, 2, 8), StringField, 0, 8);
     /* Image Module Version and checksum */
     DEFINE_FIELD(fw_module_version, FixedValue, ObisId(1, 1, 0, 2, 0), FixedField, units::none, units::none);
-    DEFINE_FIELD(fw_module_checksum, std::string, ObisId(1, 1, 0, 2, 8), StringField, 0, 8);
+    DEFINE_FIELD(fw_module_checksum, const char*, ObisId(1, 1, 0, 2, 8), StringField, 0, 8);
       
   } // namespace fields
 
