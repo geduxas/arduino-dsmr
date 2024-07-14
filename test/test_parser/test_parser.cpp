@@ -28,6 +28,7 @@ void test_short() {
   }
 
   TEST_ASSERT_FALSE(res.err);
+  TEST_ASSERT_EQUAL_INT(strlen("KFM5KAIFA-METER"), strlen(myData.identification));
   TEST_ASSERT_EQUAL_STRING("KFM5KAIFA-METER", myData.identification);
   TEST_ASSERT_EQUAL_UINT32(318, myData.power_delivered.int_val());
   TEST_ASSERT_FLOAT_WITHIN(0.1, 0.318, myData.power_delivered.val());
@@ -129,6 +130,7 @@ void test_full() {
 
   TEST_ASSERT_FALSE(res.err);
   // test each type only once
+  TEST_ASSERT_EQUAL_INT(strlen("150117185916W"), strlen(myData.timestamp));
   TEST_ASSERT_EQUAL_STRING("150117185916W", myData.timestamp);
   TEST_ASSERT_EQUAL_STRING("0001", myData.electricity_tariff);
   TEST_ASSERT_EQUAL_UINT32(671578, myData.energy_delivered_tariff1.int_val());  // part of FixedValue
@@ -195,6 +197,7 @@ void test_be() {
   }
 
   TEST_ASSERT_FALSE(res.err);
+  TEST_ASSERT_EQUAL_INT(strlen("50217"), strlen(myData.p1_version_be));
   TEST_ASSERT_EQUAL_STRING("50217", myData.p1_version_be);
   TEST_ASSERT_FLOAT_WITHIN(0.1, 1.811, myData.active_energy_import_maximum_demand_running_month.val());
   TEST_ASSERT_FLOAT_WITHIN(0.1, 3.841, myData.active_energy_import_maximum_demand_last_13_months.val());
