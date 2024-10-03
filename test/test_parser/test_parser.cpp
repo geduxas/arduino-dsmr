@@ -327,7 +327,7 @@ void test_lt() {
     "1-0:52.36.0(00000)\r\n"
     "1-0:72.36.0(00000)\r\n"
     "0-0:96.1.1(3030303030303030303030303030303030303030303030303030303030303030)\r\n"
-    "!9A1F\r\n";
+    "!779F\r\n";
 
   ParsedData<
     /* String */ identification,
@@ -347,12 +347,11 @@ void test_lt() {
     free(toPrint);
   }
 
-  TEST_ASSERT_TRUE(res.err);
-  //TEST_ASSERT_EQUAL_INT(strlen("setP1_max_3ph"), strlen(myData.consumer_msg));
-  //TEST_ASSERT_EQUAL_STRING("setP1_max_3ph", myData.consumer_msg);
-  
+  TEST_ASSERT_FALSE(res.err);
+  TEST_ASSERT_EQUAL_INT(strlen("setP1_max_3ph"), strlen(myData.consumer_msg));
+  TEST_ASSERT_EQUAL_STRING("setP1_max_3ph", myData.consumer_msg);
   TEST_ASSERT_FLOAT_WITHIN(-0.025, -0.021, myData.active_demand_net.val());
-  TEST_ASSERT_FLOAT_WITHIN(-1.0, 1.0 , myData.power_factor_l1.val());
+  TEST_ASSERT_FLOAT_WITHIN(-0.910, -0.915 , myData.power_factor_l1.val());
   TEST_ASSERT_FLOAT_WITHIN(-1.0, 1.0, myData.power_factor_l2.val());
   TEST_ASSERT_FLOAT_WITHIN(-1.0, 1.0, myData.power_factor_l3.val());
   TEST_ASSERT_FLOAT_WITHIN(-1.0, 1.0, myData.min_power_factor.val());

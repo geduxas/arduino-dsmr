@@ -74,6 +74,55 @@ namespace dsmr
     }
   };
 
+  // A hexstring field is essencially a string filled with hex digits. If the
+  // string does not consist of an even number of hex digits, the original
+  // string is returned, otherwise the decoded hex string is returned.
+  template <typename T, size_t minlen, size_t maxlen>
+  struct HexStringField : ParsedField<T>
+  {
+    ParseResult<void> parse(char *str, char *end)
+    {
+      ParseResult<const char*> res = StringParser::parse_string(minlen, maxlen, str, end);
+      if (!res.err)
+         static_cast<T *>(this)->val() = res.result;
+
+      if (strlen(res.result) & 1)
+         return res;
+
+      for (const char* ptr = res.result; *ptr != '\0'; ++ptr) {
+             if (!isxdigit(*ptr)) {
+                 return res; // Not all chars are hex digits. Return as is.
+             }
+      }
+
+      char* hexStr = new char[strlen(res.result) / 2 + 1];
+      char* hexPtr = hexStr;
+
+      while (*res.result != '\0' && *(res.result + 1) != '\0') {
+          // Get the first and second hex characters
+          const unsigned char ch1 = static_cast<unsigned char>(*res.result++);
+          const unsigned char ch2 = static_cast<unsigned char>(*res.result++);
+
+          // Convert the hex characters to a byte
+          uint8_t val = (isdigit(ch1) ? ch1 - '0' : toupper(ch1) - 'A' + 10) * 16 +
+                        (isdigit(ch2) ? ch2 - '0' : toupper(ch2) - 'A' + 10);
+
+          // Store the byte in hexStr
+          *hexPtr++ = static_cast<char>(val);
+      }
+      *hexPtr = '\0'; // Null-terminate the converted string
+      static_cast<T *>(this)->val() = hexStr;
+
+      return res;
+    }
+    // Destructor to clean up allocated memory
+    ~HexStringField()
+    {
+        // Clean up memory allocated for binary data
+        delete[] static_cast<T *>(this)->val();
+    }
+  };
+
   // A timestamp is essentially a string using YYMMDDhhmmssX format (where
   // X is W or S for wintertime or summertime). Parsing this into a proper
   // (UNIX) timestamp is hard to do generically. Parsing it into a
@@ -596,9 +645,9 @@ namespace dsmr
     DEFINE_FIELD(fw_core_checksum, const char*, ObisId(1, 0, 0, 2, 8), StringField, 0, 8);
     /* Image Module Version and checksum */
     DEFINE_FIELD(fw_module_version, FixedValue, ObisId(1, 1, 0, 2, 0), FixedField, units::none, units::none);
-    DEFINE_FIELD(fw_module_checksum, const char*, ObisId(1, 1, 0, 2, 8), StringField, 0, 8);
+    DEFINE_FIELD(fw_module_checksum, const char*, ObisId(1, 1, 0, 2, 8), StringField, 5, 8);
 
-    DEFINE_FIELD(consumer_msg, const char*, ObisId(0, 0, 96, 13, 0), StringField, 0, 36);
+    DEFINE_FIELD(consumer_msg, const char*, ObisId(0, 0, 96, 13, 0), HexStringField, 10, 36);
 
   } // namespace fields
 

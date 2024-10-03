@@ -34,6 +34,7 @@
 #include <cstring>  // memcpy
 #include <cstdint>  // uint8_t...
 #include <cstdlib>  // malloc
+#include <cctype>  // isxdigit, isdigit, toupper
 
 namespace dsmr
 {
