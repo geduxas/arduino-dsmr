@@ -94,9 +94,9 @@ namespace dsmr
   {
     operator float() { return val(); }
     float val() { return _value / 1000.0; }
-    uint32_t int_val() { return _value; }
+    int32_t int_val() { return _value; }
 
-    uint32_t _value = 0;
+    int32_t _value = 0;
   };
 
   // Floating point numbers in the message never have more than 3 decimal
@@ -112,7 +112,7 @@ namespace dsmr
     ParseResult<void> parse(char *str, char *end)
     {
       // Check if the value is a float value, plus its expected unit type.
-      ParseResult<uint32_t> res_float = NumParser::parse(3, _unit, str, end);
+      ParseResult<int32_t> res_float = NumParser::parse(3, _unit, str, end);
       if (!res_float.err) {
         static_cast<T *>(this)->val()._value = res_float.result;
         return res_float;
@@ -121,7 +121,7 @@ namespace dsmr
       // This accomodates for some smart meters that publish int values instead
       // of floats. E.g. most meters would publish "1-0:1.8.0(000441.879*kWh)",
       // but some use "1-0:1.8.0(000441879*Wh)" instead.
-      ParseResult<uint32_t> res_int = NumParser::parse(0, _int_unit, str, end);
+      ParseResult<int32_t> res_int = NumParser::parse(0, _int_unit, str, end);
       if (!res_int.err) {
         static_cast<T *>(this)->val()._value = res_int.result;
         return res_int;
@@ -165,7 +165,7 @@ namespace dsmr
   {
     ParseResult<void> parse(char *str, char *end)
     {
-      ParseResult<uint32_t> res_int = NumParser::parse(0, "", str, end);
+      ParseResult<int32_t> res_int = NumParser::parse(0, "", str, end);
       if (res_int.err) {
         return res_int;
       }
@@ -196,7 +196,7 @@ namespace dsmr
   {
     ParseResult<void> parse(char *str, char *end)
     {
-      ParseResult<uint32_t> res = NumParser::parse(0, _unit, str, end);
+      ParseResult<int32_t> res = NumParser::parse(0, _unit, str, end);
       if (!res.err)
         static_cast<T *>(this)->val() = res.result;
       return res;
@@ -247,7 +247,9 @@ namespace dsmr
       static constexpr char GJ[] = "GJ";
       static constexpr char MJ[] = "MJ";
       static constexpr char kVAr[] = "kVAr";
+      static constexpr char VAr[] = "VAr";
       static constexpr char kVArh[] = "kVArh";
+      static constexpr char VArh[] = "VArh";
       static constexpr char kVA[] = "kVA";
       static constexpr char VA[] = "VA";
       static constexpr char s[] = "s";
@@ -310,25 +312,25 @@ namespace dsmr
     /*
  * Extra fields used for Luxembourg and Lithuania
  */
-    DEFINE_FIELD(total_imported_energy, FixedValue, ObisId(1, 0, 3, 8, 0), FixedField, units::kVArh, units::kVArh);
+    DEFINE_FIELD(total_imported_energy, FixedValue, ObisId(1, 0, 3, 8, 0), FixedField, units::kVArh, units::VArh);
     /* Meter Reading Reactive energy delivered to client (Tariff 1) in 0,001 kvarh */
-    DEFINE_FIELD(reactive_energy_delivered_tariff1, FixedValue, ObisId(1, 0, 3, 8, 1), FixedField, units::kVArh, units::kVArh);
+    DEFINE_FIELD(reactive_energy_delivered_tariff1, FixedValue, ObisId(1, 0, 3, 8, 1), FixedField, units::kVArh, units::VArh);
     /* Meter Reading Reactive energy delivered to client (Tariff 2) in 0,001 kvarh */
-    DEFINE_FIELD(reactive_energy_delivered_tariff2, FixedValue, ObisId(1, 0, 3, 8, 2), FixedField, units::kVArh, units::kVArh);
+    DEFINE_FIELD(reactive_energy_delivered_tariff2, FixedValue, ObisId(1, 0, 3, 8, 2), FixedField, units::kVArh, units::VArh);
     /* Meter Reading Reactive energy delivered to client (Tariff 3) in 0,001 kvarh */
-    DEFINE_FIELD(reactive_energy_delivered_tariff3, FixedValue, ObisId(1, 0, 3, 8, 3), FixedField, units::kVArh, units::kVArh);
+    DEFINE_FIELD(reactive_energy_delivered_tariff3, FixedValue, ObisId(1, 0, 3, 8, 3), FixedField, units::kVArh, units::VArh);
     /* Meter Reading Reactive energy delivered to client (Tariff 4) in 0,001 kvarh */
-    DEFINE_FIELD(reactive_energy_delivered_tariff4, FixedValue, ObisId(1, 0, 3, 8, 4), FixedField, units::kVArh, units::kVArh);
+    DEFINE_FIELD(reactive_energy_delivered_tariff4, FixedValue, ObisId(1, 0, 3, 8, 4), FixedField, units::kVArh, units::VArh);
 
-    DEFINE_FIELD(total_exported_energy, FixedValue, ObisId(1, 0, 4, 8, 0), FixedField, units::kVArh, units::kVArh);
+    DEFINE_FIELD(total_exported_energy, FixedValue, ObisId(1, 0, 4, 8, 0), FixedField, units::kVArh, units::VArh);
     /* Meter Reading Reactive energy delivered by client (Tariff 1) in 0,001 kvarh */
-    DEFINE_FIELD(reactive_energy_returned_tariff1, FixedValue, ObisId(1, 0, 4, 8, 1), FixedField, units::kVArh, units::kVArh);
+    DEFINE_FIELD(reactive_energy_returned_tariff1, FixedValue, ObisId(1, 0, 4, 8, 1), FixedField, units::kVArh, units::VArh);
     /* Meter Reading Reactive energy delivered by client (Tariff 2) in 0,001 kvarh */
-    DEFINE_FIELD(reactive_energy_returned_tariff2, FixedValue, ObisId(1, 0, 4, 8, 2), FixedField, units::kVArh, units::kVArh);
+    DEFINE_FIELD(reactive_energy_returned_tariff2, FixedValue, ObisId(1, 0, 4, 8, 2), FixedField, units::kVArh, units::VArh);
     /* Meter Reading Reactive energy delivered by client (Tariff 3) in 0,001 kvarh */
-    DEFINE_FIELD(reactive_energy_returned_tariff3, FixedValue, ObisId(1, 0, 4, 8, 3), FixedField, units::kVArh, units::kVArh);
+    DEFINE_FIELD(reactive_energy_returned_tariff3, FixedValue, ObisId(1, 0, 4, 8, 3), FixedField, units::kVArh, units::VArh);
     /* Meter Reading Reactive energy delivered by client (Tariff 4) in 0,001 kvarh */
-    DEFINE_FIELD(reactive_energy_returned_tariff4, FixedValue, ObisId(1, 0, 4, 8, 4), FixedField, units::kVArh, units::kVArh);
+    DEFINE_FIELD(reactive_energy_returned_tariff4, FixedValue, ObisId(1, 0, 4, 8, 4), FixedField, units::kVArh, units::VArh);
 
     /* Tariff indicator electricity. The tariff indicator can also be used
  * to switch tariff dependent loads e.g boilers. This is the
@@ -343,8 +345,8 @@ namespace dsmr
     /*
  * Extra fields used for Luxembourg and Lithuania
  */
-    DEFINE_FIELD(reactive_power_delivered, FixedValue, ObisId(1, 0, 3, 7, 0), FixedField, units::kVAr, units::kVAr);
-    DEFINE_FIELD(reactive_power_returned, FixedValue, ObisId(1, 0, 4, 7, 0), FixedField, units::kVAr, units::kVAr);
+    DEFINE_FIELD(reactive_power_delivered, FixedValue, ObisId(1, 0, 3, 7, 0), FixedField, units::kVAr, units::VAr);
+    DEFINE_FIELD(reactive_power_returned, FixedValue, ObisId(1, 0, 4, 7, 0), FixedField, units::kVAr, units::VAr);
 
     /* The actual threshold Electricity in kW. Removed in 4.0.7 / 4.2.2 / 5.0 */
     DEFINE_FIELD(electricity_threshold, FixedValue, ObisId(0, 0, 17, 0, 0), FixedField, units::kW, units::W);
@@ -495,7 +497,7 @@ namespace dsmr
     DEFINE_FIELD(active_demand_power, FixedValue, ObisId(1, 0, 1, 24, 0), FixedField, units::kW, units::W);
     /* Active Demand Avg3 Net in W resolution */
     /* TODO: 1-0.16.24.0.255 can have negative value, this library is not ready for negative numbers. */
-    // DEFINE_FIELD(active_demand_net, int32_t, ObisId(1, 0, 16, 24, 0), IntField, units::kW);  
+    DEFINE_FIELD(active_demand_net, FixedValue, ObisId(1, 0, 16, 24, 0), FixedField, units::kW, units::W);  
     /* Active Demand Avg3 Absolute  in W resolution */
     DEFINE_FIELD(active_demand_abs, FixedValue, ObisId(1, 0, 15, 24, 0), FixedField, units::kW, units::W);
 
@@ -566,16 +568,23 @@ namespace dsmr
     /*Current quart-hourly energy consumption*/
     DEFINE_FIELD(active_energy_import_current_average_demand, FixedValue, ObisId(1, 0, 1, 4, 0), FixedField, units::kW, units::W);
     DEFINE_FIELD(active_energy_export_current_average_demand, FixedValue, ObisId(1, 0, 2, 4, 0), FixedField, units::kW, units::W);
-    DEFINE_FIELD(reactive_energy_import_current_average_demand, FixedValue, ObisId(1, 0, 3, 4, 0), FixedField, units::kVAr, units::kVAr);
-    DEFINE_FIELD(reactive_energy_export_current_average_demand, FixedValue, ObisId(1, 0, 4, 4, 0), FixedField, units::kVAr, units::kVAr);
+    DEFINE_FIELD(reactive_energy_import_current_average_demand, FixedValue, ObisId(1, 0, 3, 4, 0), FixedField, units::kVAr, units::VAr);
+    DEFINE_FIELD(reactive_energy_export_current_average_demand, FixedValue, ObisId(1, 0, 4, 4, 0), FixedField, units::kVAr, units::VAr);
     DEFINE_FIELD(apparent_energy_import_current_average_demand, FixedValue, ObisId(1, 0, 9, 4, 0), FixedField, units::kVA, units::VA);
     DEFINE_FIELD(apparent_energy_export_current_average_demand, FixedValue, ObisId(1, 0, 10, 4, 0), FixedField, units::kVA, units::VA);
     DEFINE_FIELD(active_energy_import_last_completed_demand, FixedValue, ObisId(1, 0, 1, 5, 0), FixedField, units::kW, units::W);
     DEFINE_FIELD(active_energy_export_last_completed_demand, FixedValue, ObisId(1, 0, 2, 5, 0), FixedField, units::kW, units::W);
-    DEFINE_FIELD(reactive_energy_import_last_completed_demand, FixedValue, ObisId(1, 0, 3, 5, 0), FixedField, units::kVAr, units::kVAr);
-    DEFINE_FIELD(reactive_energy_export_last_completed_demand, FixedValue, ObisId(1, 0, 4, 5, 0), FixedField, units::kVAr, units::kVAr);
+    DEFINE_FIELD(reactive_energy_import_last_completed_demand, FixedValue, ObisId(1, 0, 3, 5, 0), FixedField, units::kVAr, units::VAr);
+    DEFINE_FIELD(reactive_energy_export_last_completed_demand, FixedValue, ObisId(1, 0, 4, 5, 0), FixedField, units::kVAr, units::VAr);
     DEFINE_FIELD(apparent_energy_import_last_completed_demand, FixedValue, ObisId(1, 0, 9, 5, 0), FixedField, units::kVA, units::VA);
     DEFINE_FIELD(apparent_energy_export_last_completed_demand, FixedValue, ObisId(1, 0, 10, 5, 0), FixedField, units::kVA, units::VA);
+
+    /* Power Factor*/
+    DEFINE_FIELD(power_factor, FixedValue, ObisId(1, 0, 13, 7, 0),FixedField, units::none, units::none);
+    DEFINE_FIELD(power_factor_l1, FixedValue, ObisId(1, 0, 33, 7, 0),FixedField, units::none, units::none);
+    DEFINE_FIELD(power_factor_l2, FixedValue, ObisId(1, 0, 53, 7, 0),FixedField, units::none, units::none);
+    DEFINE_FIELD(power_factor_l3, FixedValue, ObisId(1, 0, 73, 7, 0),FixedField, units::none, units::none);
+    DEFINE_FIELD(min_power_factor, FixedValue, ObisId(1, 0, 13, 3, 0),FixedField, units::none, units::none);
 
     /*Maximum energy consumption from the current month*/
     DEFINE_FIELD(active_energy_import_maximum_demand_running_month, TimestampedFixedValue, ObisId(1, 0, 1, 6, 0), TimestampedFixedField, units::kW, units::W);
@@ -588,7 +597,9 @@ namespace dsmr
     /* Image Module Version and checksum */
     DEFINE_FIELD(fw_module_version, FixedValue, ObisId(1, 1, 0, 2, 0), FixedField, units::none, units::none);
     DEFINE_FIELD(fw_module_checksum, const char*, ObisId(1, 1, 0, 2, 8), StringField, 0, 8);
-      
+
+    DEFINE_FIELD(consumer_msg, const char*, ObisId(0, 0, 96, 13, 0), StringField, 0, 36);
+
   } // namespace fields
 
 } // namespace dsmr

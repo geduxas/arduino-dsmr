@@ -227,11 +227,143 @@ void test_checksum() {
   TEST_ASSERT_TRUE(res.err);
 }
 
+void test_lt() {
+  char msg[] =
+    "/ESO5\\000000000_A\r\n"
+    "\r\n"
+    "0-0:1.0.0(240214101735W)\r\n"
+    "1-0:1.8.0(000360.152*kWh)\r\n"
+    "1-0:1.8.1(000232.998*kWh)\r\n"
+    "1-0:1.8.2(000081.859*kWh)\r\n"
+    "1-0:1.8.3(000009.963*kWh)\r\n"
+    "1-0:1.8.4(000035.332*kWh)\r\n"
+    "1-0:2.8.0(000007.295*kWh)\r\n"
+    "1-0:2.8.1(000003.245*kWh)\r\n"
+    "1-0:2.8.2(000004.050*kWh)\r\n"
+    "1-0:2.8.3(000000.000*kWh)\r\n"
+    "1-0:2.8.4(000000.000*kWh)\r\n"
+    "1-0:3.8.0(000014.422*kvarh)\r\n"
+    "1-0:3.8.1(000010.607*kvarh)\r\n"
+    "1-0:3.8.2(000002.494*kvarh)\r\n"
+    "1-0:3.8.3(000000.294*kvarh)\r\n"
+    "1-0:3.8.4(000001.027*kvarh)\r\n"
+    "1-0:4.8.0(000000.002*kvarh)\r\n"
+    "1-0:4.8.1(000000.002*kvarh)\r\n"
+    "1-0:4.8.2(000000.000*kvarh)\r\n"
+    "1-0:4.8.3(000000.000*kvarh)\r\n"
+    "1-0:4.8.4(000000.000*kvarh)\r\n"
+    "1-0:21.7.0(00.000*kW)\r\n"
+    "1-0:41.7.0(00.000*kW)\r\n"
+    "1-0:61.7.0(00.000*kW)\r\n"
+    "1-0:22.7.0(00.024*kW)\r\n"
+    "1-0:42.7.0(00.000*kW)\r\n"
+    "1-0:62.7.0(00.000*kW)\r\n"
+    "1-0:23.7.0(00.000*kvar)\r\n"
+    "1-0:43.7.0(00.000*kvar)\r\n"
+    "1-0:63.7.0(00.000*kvar)\r\n"
+    "1-0:24.7.0(00.000*kvar)\r\n"
+    "1-0:44.7.0(00.000*kvar)\r\n"
+    "1-0:64.7.0(00.000*kvar)\r\n"
+    "1-0:32.7.0(234.7*V)\r\n"
+    "1-0:32.24.0(234.6*V)\r\n"
+    "1-0:31.7.0(000*A)\r\n"
+    "1-0:52.7.0(235.6*V)\r\n"
+    "1-0:52.24.0(234.8*V)\r\n"
+    "1-0:51.7.0(000*A)\r\n"
+    "1-0:72.7.0(234.0*V)\r\n"
+    "1-0:72.24.0(233.9*V)\r\n"
+    "1-0:71.7.0(000*A)\r\n"
+    "1-0:12.7.0(235.6*V)\r\n"
+    "1-0:11.7.0(000*A)\r\n"
+    "1-0:91.7.0(000*A)\r\n"
+    "1-0:90.7.0(000*A)\r\n"
+    "1-0:14.7.0(50.0*Hz)\r\n"
+    "1-0:15.7.0(00.024*kW)\r\n"
+    "1-0:9.7.0(00.000*kVA)\r\n"
+    "1-0:29.7.0(00.000*kVA)\r\n"
+    "1-0:49.7.0(00.000*kVA)\r\n"
+    "1-0:69.7.0(00.000*kVA)\r\n"
+    "1-0:10.7.0(00.025*kVA)\r\n"
+    "1-0:30.7.0(00.025*kVA)\r\n"
+    "1-0:50.7.0(00.000*kVA)\r\n"
+    "1-0:70.7.0(00.000*kVA)\r\n"
+    "1-0:1.24.0(00.000*kW)\r\n"
+    "1-0:16.24.0(-00.024*kW)\r\n"
+    "1-0:15.24.0(00.008*kW)\r\n"
+    "1-0:13.7.0(-1.000)\r\n"
+    "1-0:33.7.0(-0.913)\r\n"
+    "1-0:53.7.0(1.000)\r\n"
+    "1-0:73.7.0(1.000)\r\n"
+    "1-0:13.3.0(0.000)\r\n"
+    "1-0:0.8.2(00900*s)\r\n"
+    "1-0:1.4.0(000000.000*kW)\r\n"
+    "1-0:2.4.0(000000.024*kW)\r\n"
+    "1-0:3.4.0(000000.000*kvar)\r\n"
+    "1-0:4.4.0(000000.000*kvar)\r\n"
+    "1-0:9.4.0(000000.000*kVA)\r\n"
+    "1-0:10.4.0(000000.024*kVA)\r\n"
+    "0-0:96.7.21(00039)\r\n"
+    "1-0:32.33.0(03042*s)\r\n"
+    "1-0:52.33.0(03042*s)\r\n"
+    "1-0:72.33.0(03042*s)\r\n"
+    "1-0:32.34.0(0000*V)\r\n"
+    "1-0:52.34.0(0000*V)\r\n"
+    "1-0:72.34.0(0000*V)\r\n"
+    "1-0:32.37.0(00000*s)\r\n"
+    "1-0:52.37.0(00000*s)\r\n"
+    "1-0:72.37.0(00000*s)\r\n"
+    "1-0:32.38.0(000*V)\r\n"
+    "1-0:52.38.0(000*V)\r\n"
+    "1-0:72.38.0(000*V)\r\n"
+    "1-0:0.2.0(02.21)\r\n"
+    "1-0:0.2.8(1EA43311)\r\n"
+    "1-1:0.2.0(02.13)\r\n"
+    "1-1:0.2.8(047C71F1)\r\n"
+    "0-0:96.13.0(73657450315F6D61785F337068)\r\n"
+    "1-0:32.32.0(00001)\r\n"
+    "1-0:52.32.0(00001)\r\n"
+    "1-0:72.32.0(00001)\r\n"
+    "1-0:32.36.0(00000)\r\n"
+    "1-0:52.36.0(00000)\r\n"
+    "1-0:72.36.0(00000)\r\n"
+    "0-0:96.1.1(3030303030303030303030303030303030303030303030303030303030303030)\r\n"
+    "!9A1F\r\n";
+
+  ParsedData<
+    /* String */ identification,
+    /*negative value*/ active_demand_net,
+    /*negative value*/ power_factor,
+    /*negative value*/ power_factor_l1,
+    /*negative value*/ power_factor_l2,
+    /*negative value*/ power_factor_l3,
+    /*negative value*/ min_power_factor,
+    /*HexToString*/ consumer_msg
+  > myData;
+
+  ParseResult<void> res = P1Parser::parse(&myData, msg, lengthof(msg));
+  if (res.err) {
+    char* toPrint = res.fullError(msg, msg + lengthof(msg));
+    std::cout << toPrint << std::endl;
+    free(toPrint);
+  }
+
+  TEST_ASSERT_TRUE(res.err);
+  //TEST_ASSERT_EQUAL_INT(strlen("setP1_max_3ph"), strlen(myData.consumer_msg));
+  //TEST_ASSERT_EQUAL_STRING("setP1_max_3ph", myData.consumer_msg);
+  
+  TEST_ASSERT_FLOAT_WITHIN(-0.025, -0.021, myData.active_demand_net.val());
+  TEST_ASSERT_FLOAT_WITHIN(-1.0, 1.0 , myData.power_factor_l1.val());
+  TEST_ASSERT_FLOAT_WITHIN(-1.0, 1.0, myData.power_factor_l2.val());
+  TEST_ASSERT_FLOAT_WITHIN(-1.0, 1.0, myData.power_factor_l3.val());
+  TEST_ASSERT_FLOAT_WITHIN(-1.0, 1.0, myData.min_power_factor.val());
+}
+
 int main() {
   UNITY_BEGIN();
   RUN_TEST(test_short);
   RUN_TEST(test_full);
   RUN_TEST(test_be);
   RUN_TEST(test_checksum);
+  RUN_TEST(test_lt);
   return UNITY_END();
 }

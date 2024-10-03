@@ -54,7 +54,9 @@ constexpr char units::dm3[];
 constexpr char units::GJ[];
 constexpr char units::MJ[];
 constexpr char units::kVAr[];
+constexpr char units::VAr[];
 constexpr char units::kVArh[];
+constexpr char units::VArh[];
 constexpr char units::kVA[];
 constexpr char units::VA[];
 constexpr char units::s[];
@@ -326,8 +328,8 @@ constexpr char apparent_return_power_l3::name[];
 constexpr ObisId active_demand_power::id;
 constexpr char active_demand_power::name[];
 
-//constexpr ObisId active_demand_net::id;
-//constexpr char active_demand_net::name[];
+constexpr ObisId active_demand_net::id;
+constexpr char active_demand_net::name[];
 
 constexpr ObisId active_demand_abs::id;
 constexpr char active_demand_abs::name[];
@@ -451,6 +453,21 @@ constexpr char active_energy_import_maximum_demand_running_month::name[];
 constexpr ObisId active_energy_import_maximum_demand_last_13_months::id;
 constexpr char active_energy_import_maximum_demand_last_13_months::name[];
 
+constexpr ObisId power_factor::id;
+constexpr char power_factor::name[];
+
+constexpr ObisId power_factor_l1::id;
+constexpr char power_factor_l1::name[];
+
+constexpr ObisId power_factor_l2::id;
+constexpr char power_factor_l2::name[];
+
+constexpr ObisId power_factor_l3::id;
+constexpr char power_factor_l3::name[];
+
+constexpr ObisId min_power_factor::id;
+constexpr char min_power_factor::name[];
+
 constexpr ObisId fw_core_version::id;
 constexpr char fw_core_version::name[];
 
@@ -462,3 +479,6 @@ constexpr char fw_module_version::name[];
 
 constexpr ObisId fw_module_checksum::id;
 constexpr char fw_module_checksum::name[];
+
+constexpr ObisId consumer_msg::id;
+constexpr char consumer_msg::name[];
